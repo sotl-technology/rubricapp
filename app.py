@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, send_file, jsonify
+from flask import Flask, render_template, redirect, url_for, request, send_file, jsonify, send_from_directory, safe_join, abort
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField
@@ -8,7 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 #from selenium import webdriver;
 from filelock import Timeout, FileLock
-
+from datetime import datetime, date
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import os
 import subprocess
@@ -16,13 +16,11 @@ import subprocess
 import shutil
 import openpyxl
 from openpyxl import load_workbook
-import datetime
 import uuid
-
+import time
 import json
 import sys
 from fpdf import FPDF, HTMLMixin
-
 import platform
 from django.utils.safestring import mark_safe
 from django.template import Library
@@ -31,6 +29,11 @@ import json
 import smtplib
 from email.message import EmailMessage
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import zipfile
+from os.path import basename
+import glob
+
+
 
 # from dataBase import *
 
@@ -140,8 +143,10 @@ class EmailSendingRecord(UserMixin, db.Model):
     project_name = db.Column(db.String(150), primary_key=True)
     project_owner = db.Column(db.String(30), primary_key=True)
     eva_name = db.Column(db.String(150), primary_key=True)
-    num_of_tasks = db.Column(db.Integer, nullable=True)
+    num_of_tasks = db.Column(db.Integer, nullable=True)                 #total number of students
     num_of_finished_tasks = db.Column(db.Integer, nullable=True)
+    time_email_sent = db.Column(db.TEXT, nullable = True)
+
 
 # Settings of Directory ======================================================================================================
 
@@ -440,8 +445,7 @@ def project_profile(project_id, msg):
     if records is not None:
         sending_info_dict = {}
         for record in records:
-            sending_info_dict[record.eva_name] = [record.num_of_tasks, record.num_of_finished_tasks]
-        print(sending_info_dict)
+            sending_info_dict[record.eva_name] = [record.num_of_tasks, record.num_of_finished_tasks, record.time_email_sent]
     else:
         sending_info_dict = {}
 
@@ -1139,13 +1143,13 @@ def jump_to_evaluation_page(project_id, evaluation_name, metaid, group, msg):
         owner_list = []
 
         #first, convert string to time and then pick the latest update which committed by this user.
-        previous_max_date = datetime.datetime.min
+        previous_max_date = datetime.min
         active_tab_tuple = ()
         for row in temp_eva:
             if str(group) == str(row['group_id']):
                 owner_per_row = str(row['owner'])
                 date = str(row['date'])
-                date_datetime = datetime.datetime.strptime(date, "%Y-%m-%d_%H-%M-%S")
+                date_datetime = datetime.strptime(date, "%Y-%m-%d_%H-%M-%S")
                 # tuple will be unique in this evaluation
                 tuple = (owner_per_row, date)
                 if owner_per_row == current_user.username and date_datetime > previous_max_date:
@@ -1246,7 +1250,7 @@ def evaluation_page(project_id, evaluation_name, metaid, group, owner, past_date
     row_to_insert = []
     group_id = group
     submit_type = request.form['submit_button']
-    date = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     row_to_insert.append(group_id)
     row_to_insert.append(evaluation_name)
     # if edit, create a new row with owner = current user
@@ -1515,9 +1519,15 @@ def download_page(project_id, evaluation_name, group, type, show_score):
 
 
 # download xlsx file or html file
-@app.route('/download/<string:project_id>/<string:evaluation_name>/<string:current_time>', methods=['GET', 'POST'])
+@app.route('/download/<string:project_id>/<string:evaluation_name>', methods=['GET', 'POST'])
 @login_required
-def download(project_id, evaluation_name, current_time):
+def download(project_id, evaluation_name):
+    # print(current_time)
+
+    now = datetime.now().time()
+    today = date.today().strftime("%b_%d_%Y")
+    current_time = now.strftime("%I_%M_%S")
+
     project = Permission.query.filter_by(project_id=project_id).first()
     path_to_load_project = "{}/{}/{}".format(base_directory, current_user.username, project.project)
     path_to_evaluation_file = "{}/evaluation.xlsx".format(path_to_load_project)
@@ -1537,7 +1547,7 @@ def download(project_id, evaluation_name, current_time):
     filename = "{}_{}_{}.xlsx".format(project.project, evaluation_name, current_time)
     if evaluation_name == "all_eva":
         try:
-            return send_file(path_to_evaluation_file, attachment_filename=filename, as_attachment=True)
+            return send_file(path_to_evaluation_file, cache_timeout=1, attachment_filename=filename, as_attachment=True)
             # msg = "Successfully downloaded"
             # return redirect(url_for("project_profile_jumptool", project_id=project_id, msg=msg))
         except Exception as e:
@@ -1570,7 +1580,7 @@ def download(project_id, evaluation_name, current_time):
                 f.write(render_template("evaluation_page.html", project=project, json_data=json_data, group_col=group_col,
                                         msg=msg, evaluation_name=evaluation_name, edit_data=eva_to_edit, owner=owner,
                                         students=students))
-        return send_file(path_to_html, as_attachment=True)
+        return send_file(path_to_html, cache_timeout=1, as_attachment=True)
 
 @app.route('/downloadRubric/<string:type>/<string:name>/<string:owner>', methods= ['GET', 'POST'])
 @login_required
@@ -1579,7 +1589,9 @@ def downloadRubric(type, name, owner):
         path_to_default_json = "{}/{}/{}".format(home_directory, "Default", name)
         return send_file(path_to_default_json, attachment_filename=name, as_attachment=True)
 
-# def jump_to_evaluation_page(project_id, evaluation_name, group, msg):
+
+
+
 @app.route('/sendEmail/<string:project_id>/<string:evaluation_name>/<string:show_score>', methods=['GET', 'POST'])
 @login_required
 def sendEmail(project_id, evaluation_name, show_score):
@@ -1593,6 +1605,14 @@ def sendEmail(project_id, evaluation_name, show_score):
     """
     project = Permission.query.filter_by(project_id=project_id).first()
     path_to_load_project = "{}/{}/{}".format(base_directory, project.owner, project.project)
+
+    # make a 'evaluation_feedback' folder that stores all evaluations.
+    path_to_project_includeEvaluationFolder = "{}/{}/{}/evaluation_feedback".format(base_directory, project.owner, project.project)    
+    if not os.path.exists(path_to_project_includeEvaluationFolder):
+            os.mkdir(path_to_project_includeEvaluationFolder)
+        
+   
+
     path_to_evaluation_file = "{}/evaluation.xlsx".format(path_to_load_project)
     eva_workbook = load_workbook(path_to_evaluation_file)
     group_worksheet = eva_workbook['group']
@@ -1610,60 +1630,86 @@ def sendEmail(project_id, evaluation_name, show_score):
     students_emails = select_by_col_name("Email", students_worksheet)
     total_num_of_email = len(students_emails)
 
-
-    record_existence = EmailSendingRecord.query.filter_by(project_name=project.project,
+    current_record = EmailSendingRecord.query.filter_by(project_name=project.project,
                                     project_owner=current_user.username, eva_name=evaluation_name).first()
-    if record_existence is None:
+    current_record.num_of_finished_tasks = -1
+
+    generate_HTML_files(project_id, evaluation_name, group_col,show_score)
+    now = datetime.now()
+    current_time = now.strftime("%m/%d/%Y at %I:%M:%S")
+    current_record = EmailSendingRecord.query.filter_by(project_name=project.project,
+                                    project_owner=current_user.username, eva_name=evaluation_name).first()
+
+    current_record.time_email_sent = current_time
+
+    db.session.commit()
+    return redirect(url_for('project_profile', project_id=project_id, msg="success"))
+
+
+
+# This function serves as a helper function for the 'Send Email' & 'Download Feedback' buttons in the '/project_profile/...' route.
+# It generates html files of the rubric. It's implemented so that feedbacks can be previewed (downloaded) before being sent (emailed) with out
+# rendering an error.
+def generate_HTML_files(project_id,evaluation_name,group_col,show_score):
+
+    project = Permission.query.filter_by(project_id=project_id).first()
+    project_path = "{}/{}/{}".format(base_directory, project.owner, project.project)
+
+    isSendEmail = False
+
+###########################################################
+    path_to_project_includeEvaluationFolder = "{}/{}/{}/evaluation_feedback".format(base_directory, project.owner, project.project)    
+    if not os.path.exists(path_to_project_includeEvaluationFolder):
+            os.mkdir(path_to_project_includeEvaluationFolder)
+###########################################################
+
+    path_to_evaluation_file = "{}/evaluation.xlsx".format(project_path)
+    eva_workbook = load_workbook(path_to_evaluation_file)
+    group_worksheet = eva_workbook['group']
+
+    current_record = EmailSendingRecord.query.filter_by(project_name=project.project,
+                                    project_owner=current_user.username, eva_name=evaluation_name).first()
+
+    if current_record is None:
         new_record = EmailSendingRecord(project_name=project.project,
                                         project_owner=current_user.username,
                                         eva_name=evaluation_name)
         db.session.add(new_record)
         db.session.commit()
-    current_record = EmailSendingRecord.query.filter_by(project_name=project.project,
+        current_record = EmailSendingRecord.query.filter_by(project_name=project.project,
                                                         project_owner=current_user.username,
                                                         eva_name=evaluation_name).first()
-    current_record.num_of_finished_tasks = 0
-    current_record.num_of_tasks = total_num_of_email
-    db.session.commit()
-    # Tried to add the process of building up htmls into threadpool, failed.
-    # with ThreadPoolExecutor(max_workers=10) as executor_building_html:
-    #     for group in group_col:
-    #         students_email = select_students_by_group(group, group_worksheet)
-    #         # grade_of_group = select_row_by_group_id(group)
-    #         # students_in_one_group = get_students_by_group(group_worksheet, students_worksheet)
-    #         # load download_page.html and store it to 'part' which will be attached to message in mail
-    #         file_name = "{}_{}_{}.html".format(project.project, evaluation_name, group)
-    #         path_to_html = "{}/{}".format(path_to_load_project, file_name)
-    #         if os.path.exists(path_to_html):
-    #             os.remove(path_to_html)
-    #         with open(path_to_html, 'w') as f:
-    #             executor_building_html.submit(f.write(download_page(project.project_id, evaluation_name, group, "normal", show_score)))
-    #
-    # with ThreadPoolExecutor(max_workers=10) as executor_sending:
-    #     for group in group_col:
-    #         students_email = select_students_by_group(group, group_worksheet)
-    #         file_name = "{}_{}_{}.html".format(project.project, evaluation_name, group)
-    #         path_to_html = "{}/{}".format(path_to_load_project, file_name)
-    #         if os.path.exists(path_to_html):
-    #             os.remove(path_to_html)
-    #         task_status = executor_sending.submit(send_emails_to_students, group, project, evaluation_name, from_email,
-    #                                               path_to_html, students_email, current_record)
+    students_worksheet = eva_workbook['students']
+    total_num_of_email = len(select_by_col_name("Email", students_worksheet))
 
-    with ThreadPoolExecutor(max_workers=10) as executor_sending:
-        for group in group_col:
+    if current_record.num_of_finished_tasks == -1:
+        isSendEmail = True
+        current_record.num_of_finished_tasks = 0
+        current_record.num_of_tasks = total_num_of_email
+        db.session.commit()  
+
+
+
+    for group in group_col:
             students_email = select_students_by_group(group, group_worksheet)
             file_name = "{}_{}_{}.html".format(project.project, evaluation_name, group)
-            path_to_html = "{}/{}".format(path_to_load_project, file_name)
+            
+            path_to_evalutaion_name = "{}/{}/{}/evaluation_feedback/{}".format(base_directory, project.owner, project.project,evaluation_name)    #make directory to place each evaluation under a file named after eva_name
+            if not os.path.exists(path_to_evalutaion_name):
+                os.mkdir(path_to_evalutaion_name)
+            path_to_html = "{}/{}".format(path_to_evalutaion_name, file_name)
+            if isSendEmail is True:
+                print("FALSE - coming_from_downloadFeedback")
+                current_record.num_of_finished_tasks += len(students_email)
             if os.path.exists(path_to_html):
                 os.remove(path_to_html)
             with open(path_to_html, 'w') as f:
                 f.write(download_page(project.project_id, evaluation_name, group, "normal", show_score))
-
-            task_status = executor_sending.submit(send_emails_to_students, group, project, evaluation_name, from_email, path_to_html, students_email, current_record)
     db.session.commit()
-    return redirect(url_for('project_profile', project_id=project_id, msg="success"))
-    # we expect no response from the server
-    # return redirect(url_for('project_profile', project_id=project_id, msg=msg))
+
+
+
+
 
 
 def send_emails_to_students(group, project, evaluation_name, from_email, path_to_html, students_email, current_record):
@@ -1680,7 +1726,8 @@ def send_emails_to_students(group, project, evaluation_name, from_email, path_to
     :param current_record: sending record (row) in the EmailSendingRecord database, contains three parameters
     :return: X
     """
-    subject = "grade: project{}, evaluation{}, group{}".format(project.project, evaluation_name, group)
+    subject = "grade: {}, {}, {}".format(project.project, evaluation_name, group)
+    print('\n\n' + str(subject))
     try:
         index = 0;
         for email in students_email:
@@ -1690,8 +1737,9 @@ def send_emails_to_students(group, project, evaluation_name, from_email, path_to
                 index += 1
                 myLock = FileLock(path_to_html+'.lock')
                 with open(path_to_html, "r") as file_to_html:
-                    subprocess.call(["mail", "-s", subject, "-r", from_email, "-a", path_to_html, email])
-                    dateTimeObj = datetime.datetime.now()
+                    #subprocess.call(["mail", "-s", subject, "-r", from_email, "-a", path_to_html, email])
+                    subprocess.call(["mailx", "-s", "\"TestingGG\"", "elhadie540@hotmail.com"])
+                    dateTimeObj = datetime.now()
                     timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
                     current_record.num_of_finished_tasks += 1
                     print("Sent the email to " + email + " at " + timestampStr)
@@ -1868,23 +1916,72 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
+# This route is for the 'Download Feedback' button on the '/project_profile/...' route. It first generates html files of the 
+# rubrics, in case the emails haven't been 'sent'. This gives the instructor a preview of what their sending.
+@app.route('/downloadFeedBack/<string:project_id>/<string:evaluation_name>/<string:show_score>', methods=['GET', 'POST'])
+@login_required
+def downloadFeedBack(project_id, evaluation_name, show_score):
+    project = Permission.query.filter_by(project_id=project_id).first()         #find project
+    
+    project_path = "{}/{}/{}".format(base_directory, project.owner, project.project)
 
-# def sendmail(from_email, password, to_email, subject, message):
-#     msg = MIMEMultipart()
-#     msg['From'] = from_email
-#     msg['To'] = to_email
-#     msg['Subject'] = subject
-#     msg.attach(MIMEText(message, 'plain'))
-#     try:
-#         server = smtplib.SMTP(host='smtp-mail.outlook.com', port=587)
-#         server.starttls()
-#          server.login(from_email, password)
-#         server.send_message(msg)
-#         server.quit()
-#         return "successfully"
-#     except Exception as e:
-#         print('Something went wrong' + str(e))
-#         return "Something went wrong"
+    path_to_evaluation_file = "{}/evaluation.xlsx".format(project_path)
+    eva_workbook = load_workbook(path_to_evaluation_file)
+    group_worksheet = eva_workbook['group']
+
+    group_col = []
+    for col_item in list(group_worksheet.iter_cols())[0]:
+        if col_item.value != "groupid":
+            group_col.append(col_item.value)
+  
+
+    generate_HTML_files(project_id, evaluation_name, group_col, show_score)
+    
+
+    evaluation_name_find_in_db = Evaluation.query.filter_by(project_owner=current_user.username, project_name=project.project).all()    #look up all evaluations associated with project
+
+    currentDir = os.getcwd();
+    os.chdir(currentDir+"/users/{}".format(project.owner))                  # change current directory to /users/username/project/
+    currentZipFiles = []
+    for zips in glob.glob("feedback_*.zip"):
+        currentZipFiles.append(zips)
+
+    for x in currentZipFiles:
+        if os.path.exists(os.getcwd()+"/"+str(x)):
+            os.remove(os.getcwd()+"/"+str(x))
+
+    os.chdir(currentDir)                                                    # change directory back to what it was previously
+    
+
+    pathUP = "{}/{}".format(base_directory, project.owner)    #make directory to place each evaluation under a file named after eva_name
+
+    now = datetime.now().time()
+    today = date.today().strftime("%b_%d_%Y")
+    current_time = now.strftime("%I_%M_%S")
+    filename = "{}_{}.zip".format(evaluation_name,today)
+    fullPath = "{}/{}".format(pathUP,filename)
+    if os.path.exists(fullPath):
+        os.remove(fullPath)
+
+    
+    zipObj = zipfile.ZipFile(fullPath,'w')
+    at_least_one_match = False
+    path_to_evalutaion_name = "{}/{}/{}/evaluation_feedback/{}".format(base_directory, project.owner, project.project,evaluation_name)    #make directory to place each evaluation under a file named after eva_name
+
+    for roots, _, files in os.walk(path_to_evalutaion_name):
+        for file in files:
+            filepath = os.path.join(roots,file)
+            at_least_one_match = True
+            zipObj.write(filepath)
+    zipObj.close()
+
+    if not at_least_one_match:
+        raise Exception("EVALUATION HAS NOT BEEN SENT. OR IT DOESN'T EXIST IN DB")
+    return send_file(fullPath,cache_timeout=1, as_attachment=True)
+    #return redirect(url_for('project_profile', project_id=project_id, msg="success"))
+
+
+
 
 # select all elements by the column name
 def select_by_col_name(col_name, worksheet):
@@ -2022,7 +2119,7 @@ def new_row_generator(group, students, eva_name, worksheet):
         elif tag.value == 'eva_name':
             row_to_return.append(eva_name)
         elif tag.value == 'date':
-            date = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
             row_to_return.append(date)
         elif tag.value == 'owner':
             row_to_return.append(current_user.username)
@@ -2047,6 +2144,7 @@ def get_students_by_group(group_worksheet, students_worksheet):
                 student_couple = [email.value, student_name]
                 return_map[group[0].value].append(student_couple)
     return return_map
+
 
 
 # After login===============================================================================================================================
