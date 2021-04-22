@@ -1,4 +1,5 @@
 import unittest
+import os
 from signUpDriver import signUp
 from createProjectDriver import createProject
 import time
@@ -12,19 +13,21 @@ class configure:
         #both xlsx and json files have to be downloaded previously
         (username, password) = ("sampleuser_CreateProject@mail.com", "abcdefgh") 
         (projectname, projectdescription) =("Teamwork", "A sample project using an ELPISSrubric for Teamwork") 
-        (studentFile, jsonFile) = ("C:/Users/Wangj/Downloads/sample_roster.xlsx", "C:/Users/Wangj/Downloads/teamwork_scale3.json")       
+        # (studentFile, jsonFile) = ("C:/Users/Wangj/Downloads/sample_roster.xlsx", "C:/Users/Wangj/Downloads/teamwork_scale3.json")  
+        (studentFile, jsonFile) = (os.getcwd() + "/sample_roster.xlsx", os.getcwd() + "/teamwork_scale3.json")
         return (username, password, projectname, projectdescription, studentFile, jsonFile)
     
     def configure_test_3_1_CreateProject_InvalidProjectNameAndDescription():
         (username, password) = ("sampleuser_CreateProject@mail.com", "abcdefgh")
         (projectname, projectdescription) =("12", "1"*256)  
-        (studentFile, jsonFile) = ("C:/Users/Wangj/Downloads/sample_roster.xlsx", "C:/Users/Wangj/Downloads/teamwork_scale3.json") 
+        (studentFile, jsonFile) = (os.getcwd() + "/sample_roster.xlsx", os.getcwd() + "/teamwork_scale3.json") 
         return (username, password, projectname, projectdescription, studentFile, jsonFile)
     
     def configure_test_3_2_CreateProject_InvalidFileFormat():
         (username, password) = ("sampleuser_CreateProject@mail.com", "abcdefgh") 
         (projectname, projectdescription) = ("Teamwork", "A sample project using an ELPISSrubric for Teamwork")
-        (studentFile, jsonFile) = ("C:/Users/Wangj/Downloads/teamwork_scale3.json","C:/Users/Wangj/Downloads/sample_roster.xlsx")
+        # (studentFile, jsonFile) = ("C:/Users/Wangj/Downloads/teamwork_scale3.json","C:/Users/Wangj/Downloads/sample_roster.xlsx")
+        (studentFile, jsonFile) = (os.getcwd() + "/teamwork_scale3.json", os.getcwd() + "/sample_roster.xlsx")
         return (username, password, projectname, projectdescription, studentFile, jsonFile)
     
 
@@ -42,7 +45,7 @@ class TestCreateProject(unittest.TestCase):
         
         testSignUp.Close()
        
-
+    
       
     
     #if first time run, this test will create a project; if not the first time, there won't be duplicate projects created

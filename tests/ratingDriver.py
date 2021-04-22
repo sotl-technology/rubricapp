@@ -82,7 +82,7 @@ class rating:
         #this is to save the rating
         self.driver.find_element_by_id("button").click()
         self.driver.implicitly_wait(5)
-        # time.sleep(5)
+        #time.sleep(5)
         
         return (status1, status2, status3)
     
@@ -90,29 +90,46 @@ class rating:
         self.driver.find_element_by_css_selector(".tool-panel:nth-child(2) #" + groupName + " > .active-toolbox").click()
         self.driver.switch_to.alert.accept()
     
-    
-    def driver_Rating_One_Group(self, username, password, projectName, evaluationName, ratinglevel, checkbox1=False, checkbox2=False, checkbox3=False):
-        
-        #login
-        logIn.Driver_Login(self,username, password) 
-        
-        # Select project
+    def selectProject(self, projectName):
         self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_link_text(projectName))
         self.driver.implicitly_wait(5)
-        projectURL = self.driver.current_url
+    
+    def selectEvaluation(self):
+        self.driver.find_element_by_link_text("b").click()        
+        self.driver.implicitly_wait(5)
+    
+    def Rate_Group(self, username, password, projectName, evaluationName, groupName, ratinglevel, checkbox1=False, checkbox2=False, checkbox3=False):
+
         
         #Select evaluation and the metagroup to rate:  here I tested the b metagroup of the first evaluation      
-        self.driver.find_element_by_link_text("b").click()
+
+        rating.selectEvaluation(self)
         metaGroupURL = self.driver.current_url
-        self.driver.implicitly_wait(5)
+        
+        #select group to rate
+        rating.switchGroup(self, groupName)
         
         # obtain creation time of the evaluation, and css version of username for locating element
         (timeCreation, css) = rating.getCssUsernameAndTimeCreateOfEvaluation(self, username)
         
-        #initially in F group in my case: 
-        #Rate the interacting category of F group: my choices are: level is "Sporadically", and first two checkboxes (label "a", "b")
-        (statusA, statusB, statusC) = rating.rateInteracting(self, css, username, timeCreation, "Sporadically", checkbox1, checkbox2, checkbox3)
+        #initially in O group in my case: 
+        #Rate the interacting category of O group: my choices are: level is "Sporadically", and first two checkboxes (label "a", "b")
+        (statusA, statusB, statusC) = rating.rateInteracting(self, css, username, timeCreation, ratinglevel, checkbox1, checkbox2, checkbox3)
         #time.sleep(5)
+        return (metaGroupURL, statusA, statusB, statusC)
+    
+    
+    def driver_Rating_One_Group(self, username, password, projectName, evaluationName, groupName, ratinglevel, checkbox1=False, checkbox2=False, checkbox3=False):
+        
+        #login
+        logIn.Driver_Login(self,username, password) 
+
+        # Select project
+        rating.selectProject(self, projectName)        
+        projectURL = self.driver.current_url
+        
+        (metaGroupURL, statusA, statusB, statusC) = rating.Rate_Group(self, username, password, projectName, evaluationName, groupName, ratinglevel, checkbox1, checkbox2, checkbox3)
+        
         return (projectURL, metaGroupURL, statusA, statusB, statusC)
         
     
@@ -120,22 +137,21 @@ class rating:
         #login
         logIn.Driver_Login(self,username, password) 
         
-        # Select project
-        self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_link_text(projectName))
-        self.driver.implicitly_wait(5)
+        # Select project        
+        rating.selectProject(self, projectName)
         projectURL = self.driver.current_url
         
         #Select evaluation and the metagroup to rate:  here I tested the b metagroup of the first evaluation      
-        self.driver.find_element_by_link_text("b").click()
+        rating.selectEvaluation(self)
         metaGroupURL = self.driver.current_url
-        self.driver.implicitly_wait(5)
+        
         
         # obtain creation time of the evaluation, and css version of username for locating element
         (timeCreation, css) = rating.getCssUsernameAndTimeCreateOfEvaluation(self, username)
         
-        #initially in F group in my case
+        #initially in O group in my case
         
-        #now switch to O group:
+        #now switch to F group:
         rating.switchGroup(self, switchGroup)
         secondGroupURL = self.driver.current_url
         self.driver.implicitly_wait(5)      
@@ -147,9 +163,42 @@ class rating:
         
         return (projectURL, metaGroupURL, secondGroupURL, statusA, statusB, statusC)
 
-
-
-
+    
+    
+    def test_attendance(self, username, password, projectName, evaluationName, groupName, studentNameToCheck):
+        #login
+        logIn.Driver_Login(self,username, password)
+        
+        # Select project
+        self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_link_text(projectName))
+        self.driver.implicitly_wait(5)
+        projectURL = self.driver.current_url
+        
+        #Select evaluation and the metagroup to rate:  here I tested the b metagroup of the first evaluation      
+        self.driver.find_element_by_link_text("b").click()
+        metaGroupURL = self.driver.current_url
+        self.driver.implicitly_wait(5)
+        
+      
+        rating.switchGroup(self, groupName)
+        
+        self.driver.find_element_by_css_selector("body > div.middle > div.middle-left > div:nth-child(2) > button:nth-child(5)").click()
+        
+        #response = self.driver.find_element_by_id("uniquerubricapp-c32@mailinator.com")
+        responseList = self.driver.find_elements_by_xpath("//input[@value='" + studentNameToCheck + "']")
+        self.driver.implicitly_wait(5)
+        response = responseList[1]
+        
+        if not response.is_selected():
+            response.click()
+        self.driver.find_element_by_id("AttendenceButton").click()
+        #time.sleep(5)
+        
+        
+        return response.is_selected()
+        
+        
+        
 
 
 

@@ -1,5 +1,6 @@
 import unittest
 import time
+import os
 from signUpDriver import signUp
 from createProjectDriver import createProject
 from evaluationDriver import evaluation
@@ -13,7 +14,8 @@ class configure:
         #both xlsx and json files have to be downloaded previously
         (username, password) = ("sampleuser_CreateEvaluation@mail.com", "abcdefgh") 
         (projectname, projectdescription) =("Teamwork1", "A sample project using an ELPISSrubric for Teamwork") 
-        (studentFile, jsonFile) = ("C:/Users/Wangj/Downloads/sample_roster.xlsx", "C:/Users/Wangj/Downloads/teamwork_scale3.json")       
+        # (studentFile, jsonFile) = ("C:/Users/Wangj/Downloads/sample_roster.xlsx", "C:/Users/Wangj/Downloads/teamwork_scale3.json")  
+        (studentFile, jsonFile) = (os.getcwd() + "/sample_roster.xlsx", os.getcwd() + "/teamwork_scale3.json")
         return (username, password, projectname, projectdescription, studentFile, jsonFile)
 
     def configure_test_Evaluations():

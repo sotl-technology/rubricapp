@@ -1,6 +1,7 @@
 
 from loginDriver import logIn
 from selenium.webdriver import Chrome
+
 import time
 
 class createProject:
@@ -29,7 +30,7 @@ class createProject:
         self.driver.find_element_by_id("json_file").send_keys(jsonFile)
     
     def driver_createProject(self, username, password, projectname, projectpassword, 
-        studentFile = "C:/Users/Wangj/Downloads/sample_roster.xlsx", jsonFile = "C:/Users/Wangj/Downloads/teamwork_scale3.json"):
+        studentFile, jsonFile):
         
         logIn.Driver_Login(self,username, password) #login first
         self.driver.implicitly_wait(5)
@@ -41,9 +42,12 @@ class createProject:
         #createProject.download(self) #the xlsx file should be downloaded previously
         #time.sleep(2) #this step is necessary to download the file      
         
-        createProject.setRoster(self, studentFile)
+
+        
+        createProject.setRoster(self, studentFile)        
 
         createProject.setRubrics(self, jsonFile) 
+        
         
         #This is for submission
         self.driver.find_element_by_css_selector(".w3-button").click()
@@ -53,7 +57,9 @@ class createProject:
     def createProject_attempt(self, username, password, projectname, projectpassword, studentFile, jsonFile): # if run the 2nd time, the control flow would go to duplicate username
 
         self.driver_createProject(username, password, projectname, projectpassword, studentFile, jsonFile)  
-
+        
+        time.sleep(5)
+        
         urlCurrent = self.driver.current_url
         
         try:
@@ -100,6 +106,7 @@ class createProject:
 
         createProject.testRubricFileDriver(self, username, password)
         self.driver.find_element_by_link_text("teamwork").click()
+        self.driver.implicitly_wait(5)
         self.driver.find_element_by_link_text("teamwork_scale3.json").click()
         urlRubric = self.driver.current_url    
         return urlRubric
@@ -118,8 +125,8 @@ class createProject:
     def testRubricFile_communication(self, username, password):
         
         createProject.testRubricFileDriver(self, username, password)        
-        
         self.driver.find_element_by_partial_link_text("interpersonal_communication").click()
+        self.driver.implicitly_wait(5)
         self.driver.find_element_by_link_text("interpersonal_communication_scale3.json").click()
         url = self.driver.current_url
         

@@ -34,5 +34,23 @@ class signUp:
         return loginUrl
     
     
+    def Driver_SignUp_InvalidCheckPassword(self, username, password, checkPw):
+        self.driver.find_element_by_id("email").send_keys(username)  #the username here is existed
+        self.driver.find_element_by_id("password").send_keys(password)
+        self.driver.find_element_by_id("checkpassword").send_keys(checkPw)
+        self.driver.find_element_by_css_selector(".btn").click()
+        self.driver.implicitly_wait(5)
+
+        alert1 = self.driver.find_element_by_xpath("/html/body/div[2]/form/a/div/div[2]/p").text        
+        alert2 = self.driver.find_element_by_xpath("/html/body/div[2]/form/a/div/div[3]/p").text  
+        
+        
+        return (alert1, alert2)
+        
+    
+    
+    
+    
+    
     def Close(self):
         self.driver.quit()
