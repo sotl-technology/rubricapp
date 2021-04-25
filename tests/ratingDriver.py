@@ -32,7 +32,9 @@ class rating:
         return css
     
     def getCssUsernameAndTimeCreateOfEvaluation(self, username):
-        #get time creation of the evaluation - for later locating element
+        # both css-username and creation time are used for locating elements
+        
+        #get time creation of the evaluation
         timeCreation = rating.getTimeCreationOfEvaluation(self)
         #set username in css format
         css = rating.usernameToCssUsername(username)
@@ -64,13 +66,13 @@ class rating:
     def rateInteracting(self, css, username, timeCreation, level, choice1=False, choice2=False, choice3=False):
         #Rate the level in Interacting category - here the choice is "Sporadically"
         
-        # click the dropdown for rating Interacting
-        # self.driver.find_element_by_css_selector("#Interacting\|sampleuser13\@mailinator\.com2021-03-09_00-15-17\|panel-heading .cateNames").click()
+        # click the dropdown for rating Interacting:
         self.driver.find_element_by_css_selector("#Interacting\|" + css[1:] + timeCreation +"\|panel-heading .cateNames").click()
         
+        #Rate the level
         rating.rateInteractingLevel(self, css, timeCreation, level)
         
-        #Rate the checkboxes in Interacting category:
+        #Rate the checkboxes:
         status1=status2=status3 = False
         #here rate checkbox "a"
         if choice1:   status1 = rating.rateInteractingCheckbox(self, username, timeCreation, "a")        
@@ -79,32 +81,33 @@ class rating:
         #here rate checkbox "c"
         if choice3:   status3 = rating.rateInteractingCheckbox(self, username, timeCreation, "c")
         
-        #this is to save the rating
+        #Save the rating
         self.driver.find_element_by_id("button").click()
         self.driver.implicitly_wait(5)
-        #time.sleep(5)
-        
+
         return (status1, status2, status3)
     
     def switchGroup(self, groupName):
-        self.driver.find_element_by_css_selector(".tool-panel:nth-child(2) #" + groupName + " > .active-toolbox").click()
+        
+        # For now (0425) there is an issue - duplicate code existing on rating page.
+        self.driver.find_elements_by_css_selector("#" + groupName +"> li")[1].click()
+
         self.driver.switch_to.alert.accept()
     
     def selectProject(self, projectName):
         self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_link_text(projectName))
         self.driver.implicitly_wait(5)
     
-    def selectEvaluation(self):
-        self.driver.find_element_by_link_text("b").click()        
+    def selectEvaluation(self, metagroupName): 
+        self.driver.find_element_by_link_text(metagroupName).click()  
         self.driver.implicitly_wait(5)
     
-    def Rate_Group(self, username, password, projectName, evaluationName, groupName, ratinglevel, checkbox1=False, checkbox2=False, checkbox3=False):
-
+    def Rate_Group(self, username, password, projectName, evaluationName, metagroupName, groupName, ratinglevel, checkbox1=False, checkbox2=False, checkbox3=False):
+        # rate group as desired. For now it's limited to rate "Interacting" only
         
-        #Select evaluation and the metagroup to rate:  here I tested the b metagroup of the first evaluation      
-
-        rating.selectEvaluation(self)
-        metaGroupURL = self.driver.current_url
+        #Select evaluation and the metagroup to rate  
+        rating.selectEvaluation(self, metagroupName)
+        self.driver.implicitly_wait(5)
         
         #select group to rate
         rating.switchGroup(self, groupName)
@@ -112,90 +115,58 @@ class rating:
         # obtain creation time of the evaluation, and css version of username for locating element
         (timeCreation, css) = rating.getCssUsernameAndTimeCreateOfEvaluation(self, username)
         
-        #initially in O group in my case: 
-        #Rate the interacting category of O group: my choices are: level is "Sporadically", and first two checkboxes (label "a", "b")
+        #Rate the interacting category
         (statusA, statusB, statusC) = rating.rateInteracting(self, css, username, timeCreation, ratinglevel, checkbox1, checkbox2, checkbox3)
-        #time.sleep(5)
-        return (metaGroupURL, statusA, statusB, statusC)
+        
+        return (statusA, statusB, statusC)
     
     
-    def driver_Rating_One_Group(self, username, password, projectName, evaluationName, groupName, ratinglevel, checkbox1=False, checkbox2=False, checkbox3=False):
+    def driver_Rating_One_Group(self, username, password, projectName, evaluationName, metagroupName, groupName, ratinglevel, checkbox1=False, checkbox2=False, checkbox3=False):
         
         #login
         logIn.Driver_Login(self,username, password) 
 
         # Select project
-        rating.selectProject(self, projectName)        
-        projectURL = self.driver.current_url
+        rating.selectProject(self, projectName)  
         
-        (metaGroupURL, statusA, statusB, statusC) = rating.Rate_Group(self, username, password, projectName, evaluationName, groupName, ratinglevel, checkbox1, checkbox2, checkbox3)
+        # Rate group
+        (statusA, statusB, statusC) = rating.Rate_Group(self, username, password, projectName, evaluationName, metagroupName, groupName, ratinglevel, checkbox1, checkbox2, checkbox3)
         
-        return (projectURL, metaGroupURL, statusA, statusB, statusC)
-        
-    
-    def driver_Switch_and_Rate_Another_Group(self, username, password, projectName, evaluationName, switchGroup, ratinglevel="N/A", checkbox1=False, checkbox2=False, checkbox3=False):
-        #login
-        logIn.Driver_Login(self,username, password) 
-        
-        # Select project        
-        rating.selectProject(self, projectName)
-        projectURL = self.driver.current_url
-        
-        #Select evaluation and the metagroup to rate:  here I tested the b metagroup of the first evaluation      
-        rating.selectEvaluation(self)
-        metaGroupURL = self.driver.current_url
+        rating.Close(self)
+        return (statusA, statusB, statusC)
         
         
-        # obtain creation time of the evaluation, and css version of username for locating element
-        (timeCreation, css) = rating.getCssUsernameAndTimeCreateOfEvaluation(self, username)
-        
-        #initially in O group in my case
-        
-        #now switch to F group:
-        rating.switchGroup(self, switchGroup)
-        secondGroupURL = self.driver.current_url
-        self.driver.implicitly_wait(5)      
-
-        #Rate the interacting category of O group: my choices are: level is "Frequently", and the third checkboxes (label "c")
-        (statusA, statusB, statusC) = rating.rateInteracting(self, css, username, timeCreation, ratinglevel, checkbox1, checkbox2, checkbox3)
-        
-        
-        
-        return (projectURL, metaGroupURL, secondGroupURL, statusA, statusB, statusC)
-
-    
-    
-    def test_attendance(self, username, password, projectName, evaluationName, groupName, studentNameToCheck):
+    def test_attendance(self, username, password, projectName, evaluationName, metagroupName, groupName, studentNameToCheck):
         #login
         logIn.Driver_Login(self,username, password)
         
         # Select project
-        self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_link_text(projectName))
-        self.driver.implicitly_wait(5)
-        projectURL = self.driver.current_url
+        rating.selectProject(self, projectName)
         
-        #Select evaluation and the metagroup to rate:  here I tested the b metagroup of the first evaluation      
-        self.driver.find_element_by_link_text("b").click()
-        metaGroupURL = self.driver.current_url
-        self.driver.implicitly_wait(5)
+        #Select evaluation and the metagroup to rate  
+        rating.selectEvaluation(self, metagroupName)
         
-      
+        #Select the group to rate
         rating.switchGroup(self, groupName)
         
+        # Expand the "attendance" dropdown
         self.driver.find_element_by_css_selector("body > div.middle > div.middle-left > div:nth-child(2) > button:nth-child(5)").click()
         
-        #response = self.driver.find_element_by_id("uniquerubricapp-c32@mailinator.com")
+        # Check the attendance for the student in the argument
+        # For now (0425) there is an issue - duplicate code existing on rating page.
         responseList = self.driver.find_elements_by_xpath("//input[@value='" + studentNameToCheck + "']")
         self.driver.implicitly_wait(5)
-        response = responseList[1]
+        response = responseList[1]  
         
         if not response.is_selected():
             response.click()
         self.driver.find_element_by_id("AttendenceButton").click()
-        #time.sleep(5)
+        self.driver.implicitly_wait(5)
+        isResponse = response.is_selected()
         
+        rating.Close(self)
         
-        return response.is_selected()
+        return isResponse
         
         
         

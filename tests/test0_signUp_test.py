@@ -13,18 +13,14 @@ class TestSignUp(unittest.TestCase):
     
     
     def test_SignUp_successOrExisted(self):
-        #This test would work for both first time creating a new user and duplicate creation. The duplicate running would assert the error message.
+        # Sign up - either success or duplicate user error message
         
         #data input
         (username, password) = configure.configure_test_1_successOrExisted()
-        
-        #This only prints out when there is an error
-        print("\n\nTesting SignUp\n\n")  
-        
-        #test function
+                
+        #test signUp
         testSignUp = signUp()                        
         (urlCurrent, alertInfo) = testSignUp.Driver_SignUp(username, password)
-        testSignUp.Close()
         
         IsSignUpSuccess = urlCurrent == "http://localhost:5000/login"
         IsSignUpFailed = urlCurrent == "http://localhost:5000/signup"
@@ -44,6 +40,7 @@ class TestSignUp(unittest.TestCase):
     
 
     def test_signUp_checkPassword(self):
+        #error message will be shown due to unmatching password (along with checking password too short)
         
         (username, password, checkPassword) = configure.configure_test_2_checkPassword()
         

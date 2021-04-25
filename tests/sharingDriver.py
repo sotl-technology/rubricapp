@@ -15,11 +15,11 @@ class sharing:
     def manageProject(self):
         self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_link_text("Manage Projects"))
         self.driver.implicitly_wait(5)
-        self.driver.find_element_by_link_text("Manage").click()
+        self.driver.find_element_by_xpath("//*[text()='Manage']").click()
         self.driver.implicitly_wait(5)
     
     def shareProject(self, shareToUser):
-        self.driver.find_element_by_css_selector("body > div.middle > div.container.w3-row-padding > div > div:nth-child(5) > div:nth-child(2) > table > tbody > tr > td:nth-child(3) > button").click()
+        self.driver.find_element_by_xpath("//*[text()='Create new Permission to Share your Rubric']").click()
         self.driver.implicitly_wait(5)
 
         self.driver.find_element_by_name("username").send_keys(shareToUser)
@@ -27,8 +27,10 @@ class sharing:
         self.driver.implicitly_wait(5)
 
     def deleteSharing(self):
-        self.driver.find_element_by_css_selector("body > div.middle > div.container.w3-row-padding > div > div:nth-child(5) > div:nth-child(2) > table > tbody > tr:nth-child(2) > td:nth-child(2) > input").click()
+        self.driver.find_element_by_xpath("//input[@value='delete']").click()
         self.driver.switch_to.alert.accept()
+        time.sleep(1)
+        self.driver.implicitly_wait(5)
 
     def logout(self):
         self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_link_text("Manage Projects"))
@@ -36,29 +38,34 @@ class sharing:
 
         
     def sharingProjectAndDelete(self, username, password, shareToUser):
+        #one user shares the project to another user
+        
         #login
         logIn.Driver_Login(self,username, password) 
         self.driver.implicitly_wait(5)
         
         #Manage Projects
         sharing.manageProject(self)
-        
-        
+                
         #share the project
         sharing.shareProject(self, shareToUser)
         
         #obtain the successText of sharing
-        successText = self.driver.find_element_by_xpath("//*[@id='feedback']").text
+        successText = self.driver.find_element_by_xpath("//*[text()='Permission successfully created']").text
+        
         
         #delete the sharing
         sharing.deleteSharing(self)
         
         #obtain the deleteSuccess text
-        deleteText = self.driver.find_element_by_xpath("//*[@id='feedback']").text
+        deleteText = self.driver.find_element_by_xpath("//*[text()='successfully delete permission']").text
+        
+        sharing.Close(self)
         
         return (successText, deleteText)
 
-    def sharingProjectAndCheck(self, username, password, sharedUser, sharedUserPw, projectName, evaluationName, groupName, ratinglevel, checkbox1, checkbox2, checkbox3):
+    def sharingProjectAndCheck(self, username, password, sharedUser, sharedUserPw, projectName, evaluationName, metagroupName, groupName, ratinglevel, checkbox1, checkbox2, checkbox3):
+        #Share the project and modify from the sharedUser
         
         #Firstly share the project from one user -- (username, password) to (sharedUser, sharedUserPw)
         #login
@@ -81,26 +88,26 @@ class sharing:
         #login as the user who receives the shared project - (sharedUser, sharedUserPw)
         logIn.Driver_Login(self, sharedUser, sharedUserPw) 
         
-        self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_css_selector("body > div.middle > div > div > div.w3-bar > h1:nth-child(2) > button"))
-        self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_link_text("Teamwork2"))
-        # time.sleep(3)       
+        # self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_css_selector("body > div.middle > div > div > div.w3-bar > h1:nth-child(2) > button"))
+        self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_xpath("//*[text()='Shared project']"))
+        self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_link_text("Teamwork2"))    
         
-        
-        (metaGroupURL, statusA, statusB, statusC) = rating.Rate_Group(self, username, password, projectName, evaluationName, groupName, ratinglevel, checkbox1, checkbox2, checkbox3)
+        #rate as a sharedUser
+        (statusA, statusB, statusC) = rating.Rate_Group(self, username, password, projectName, evaluationName, metagroupName, groupName, ratinglevel, checkbox1, checkbox2, checkbox3)
 
-        # time.sleep(5)
         
         #delete the sharing:
         
         #login as the (username, password) again to delete the sharing - ensure to run for another time won't fail
         logIn.Driver_Login(self,username, password) 
-        self.driver.implicitly_wait(5)
-        
+        self.driver.implicitly_wait(5)        
         #Manage Projects
         sharing.manageProject(self)
-
         #delete the sharing
         sharing.deleteSharing(self)
+        
+        
+        sharing.Close(self)
         
         return (statusA, statusB, statusC)
     

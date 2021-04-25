@@ -14,20 +14,26 @@ class evaluation:
         
     def driver_createEvaluation_attempt(self, username, password, projectName, evaluationName):
         
-        logIn.Driver_Login(self,username, password) #login first
+        logIn.Driver_Login(self,username, password)
         self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_link_text(projectName))
         self.driver.implicitly_wait(5)        
         projectURL = self.driver.current_url
         
         self.driver.find_element_by_link_text("Create a New Evaluation").click()
-        self.driver.find_element_by_id("evaluation_name").send_keys(evaluationName)  # the testing name should be a new name
+        self.driver.find_element_by_id("evaluation_name").send_keys(evaluationName)
         self.driver.find_element_by_id("evaluation_submit").click()
         
+        
         try:
-            alertInfo = self.driver.find_element_by_id("feedback").text
+            alertInfo = self.driver.find_element_by_xpath("//*[text()='The evaluation_name has been used before']").text
         except:
             alertInfo = "no error"
         
         self.driver.implicitly_wait(5)
+        evaluation.Close(self)
         
         return (projectURL,alertInfo)
+        
+        
+if __name__ == '__main__':
+    unittest.main()  
