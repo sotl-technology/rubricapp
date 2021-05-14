@@ -152,7 +152,7 @@ class Rating:
                          checkbox1=False, checkbox2=False, checkbox3=False):
 
         # login
-        LogIn._login(self, username, password)
+        LogIn.login(self, username, password)
 
         # Select project
         Rating._select_project(self, project_name)
@@ -170,7 +170,7 @@ class Rating:
                         evaluation_name, metagroup_name,
                         group_name, student_name_to_check):
         # login
-        LogIn._login(self, username, password)
+        LogIn.login(self, username, password)
 
         # Select project
         Rating._select_project(self, project_name)
