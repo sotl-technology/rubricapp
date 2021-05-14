@@ -12,41 +12,36 @@ class CreateProject:
     def close(self):
         self.driver.quit()
 
-    def set_project_description(self, project_description, project_password):
+    def _set_project_description(self, project_description, project_password):
 
         self.driver.find_element_by_id("project_name"). \
             send_keys(project_description)
         self.driver.find_element_by_id("project_description"). \
             send_keys(project_password)
 
-    def download(self):
-        text = "(Download a sample roster files)"
-        self.driver.find_element_by_link_text(text).click()
-        self.driver.implicitly_wait(10)
-
-    def set_roster(self, student_file):
+    def _set_roster(self, student_file):
 
         self.driver.find_element_by_id("student_file").send_keys(student_file)
 
-    def set_rubrics(self, json_file):
+    def _set_rubrics(self, json_file):
         self.driver.find_element_by_id("json_file").send_keys(json_file)
 
     def create_project(self, username, password, project_description,
                        project_password, student_file, json_file):
 
-        LogIn.login(self, username, password)
+        LogIn._login(self, username, password)
         self.driver.implicitly_wait(5)
         text = "Create New Project"
         self.driver.execute_script("arguments[0].click()", self.
                                    driver.find_element_by_link_text(text))
         self.driver.implicitly_wait(5)
 
-        CreateProject.set_project_description(self, project_description,
-                                              project_password)
+        CreateProject._set_project_description(self, project_description,
+                                               project_password)
 
-        CreateProject.set_roster(self, student_file)
+        CreateProject._set_roster(self, student_file)
 
-        CreateProject.set_rubrics(self, json_file)
+        CreateProject._set_rubrics(self, json_file)
 
         # This is for submission
         self.driver.find_element_by_css_selector(".w3-button").click()
@@ -102,9 +97,9 @@ class CreateProject:
         CreateProject.close(self)
         return (alert1, alert2)
 
-    def test_rubric_file(self, username, password):
+    def rubric_file(self, username, password):
 
-        LogIn.login(self, username, password)
+        LogIn._login(self, username, password)
         text = "Create New Project"
         self.driver.execute_script("arguments[0].click()", self.
                                    driver.find_element_by_link_text(text))
@@ -121,9 +116,9 @@ class CreateProject:
         self.driver.switch_to_window(window_after)
         self.driver.implicitly_wait(5)
 
-    def test_rubric_file_teamwork(self, username, password):
+    def rubric_file_teamwork(self, username, password):
 
-        CreateProject.test_rubric_file(self, username, password)
+        CreateProject.rubric_file(self, username, password)
         self.driver.find_element_by_xpath("//*[text()='teamwork']").click()
         self.driver.implicitly_wait(5)
         text = 'teamwork_scale3.json'
@@ -133,9 +128,9 @@ class CreateProject:
         CreateProject.close(self)
         return url_rubric
 
-    def test_rubric_file_info_process(self, username, password):
+    def rubric_file_info_process(self, username, password):
 
-        CreateProject.test_rubric_file(self, username, password)
+        CreateProject.rubric_file(self, username, password)
         text1 = 'information_processing'
         self.driver.\
             find_element_by_xpath("//*[text()=\"" + text1 + "\"]").click()
@@ -147,9 +142,9 @@ class CreateProject:
         CreateProject.close(self)
         return url
 
-    def test_rubric_file_communication(self, username, password):
+    def rubric_file_communication(self, username, password):
 
-        CreateProject.test_rubric_file(self, username, password)
+        CreateProject.rubric_file(self, username, password)
         text1 = 'interpersonal_communication'
         self.driver.\
             find_element_by_xpath("//*[text()=\"" + text1 + "\"]").click()

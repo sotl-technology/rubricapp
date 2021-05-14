@@ -12,7 +12,7 @@ class SignUp:
         self.driver.get("http://localhost:5000")
         self.driver.find_element_by_link_text("Sign up").click()
 
-    def setup_user(self, username, password, checkPw):
+    def _setup_user(self, username, password, checkPw):
         self.driver.find_element_by_id("email").send_keys(username)
         self.driver.find_element_by_id("password").send_keys(password)
         self.driver.find_element_by_id("checkpassword").send_keys(checkPw)
@@ -22,7 +22,7 @@ class SignUp:
     def sign_up(self, username, password):
 
         # setup user - pw and checkPw should be the same in this case
-        SignUp.setup_user(self, username, password, password)
+        SignUp._setup_user(self, username, password, password)
 
         # obtain current url
         url_current = self.driver.current_url
@@ -47,7 +47,7 @@ class SignUp:
     def invalid_check_password(self, username, password, checkPw):
 
         # setup user
-        SignUp.setup_user(self, username, password, checkPw)
+        SignUp._setup_user(self, username, password, checkPw)
 
         text1 = 'Passwords must match'
         text2 = 'Field must be between 8 and 80 characters long.'

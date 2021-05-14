@@ -130,7 +130,7 @@ class TestCreateProject(unittest.TestCase):
         (username, password) = Configure.configure_test_1_successOrExisted()
         create_p = CreateProject()
 
-        url = create_p.test_rubric_file_teamwork(username, password)
+        url = create_p.rubric_file_teamwork(username, password)
         std_url = "https://github.com/sotl-technology/rubricapp/blob/master/" \
                   "sample_file/rubrics/teamwork/teamwork_scale3.json"
         is_url_true = url == std_url
@@ -143,7 +143,7 @@ class TestCreateProject(unittest.TestCase):
         (username, password) = Configure.configure_test_1_successOrExisted()
         create_p = CreateProject()
 
-        url = create_p.test_rubric_file_info_process(username, password)
+        url = create_p.rubric_file_info_process(username, password)
         std_url = "https://github.com/sotl-technology/rubricapp/blob" \
                   "/master/sample_file/rubrics/information_processing" \
                   "/information_processing.json"
@@ -155,7 +155,7 @@ class TestCreateProject(unittest.TestCase):
         (username, password) = Configure.configure_test_1_successOrExisted()
         create_p = CreateProject()
 
-        url = create_p.test_rubric_file_communication(username, password)
+        url = create_p.rubric_file_communication(username, password)
         std_url = "https://github.com/sotl-technology/rubricapp/blob" \
                   "/master/sample_file/rubrics/interpersonal_communication" \
                   "/interpersonal_communication_scale3.json"

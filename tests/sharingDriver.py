@@ -11,7 +11,7 @@ class Sharing:
     def close(self):
         self.driver.quit()
 
-    def manage_project(self):
+    def _manage_project(self):
         self.driver.execute_script(
             "arguments[0].click()",
             self.driver.
@@ -20,7 +20,7 @@ class Sharing:
         self.driver.find_element_by_xpath("//*[text()='Manage']").click()
         self.driver.implicitly_wait(5)
 
-    def share_project(self, shareToUser):
+    def _share_project(self, shareToUser):
         self.driver.find_element_by_xpath(
             "//*[text()='Create new Permission to Share your Rubric']").\
             click()
@@ -32,14 +32,14 @@ class Sharing:
             click()
         self.driver.implicitly_wait(5)
 
-    def delete_sharing(self):
+    def _delete_sharing(self):
         self.driver.find_element_by_xpath("//input[@value='delete']").click()
         self.driver.implicitly_wait(5)
         self.driver.switch_to.alert.accept()
         time.sleep(1)
         self.driver.implicitly_wait(5)
 
-    def logout(self):
+    def _logout(self):
         self.driver.execute_script(
             "arguments[0].click()",
             self.driver.find_element_by_link_text("Manage Projects"))
@@ -49,14 +49,14 @@ class Sharing:
         # one user shares the project to another user
 
         # login
-        LogIn.login(self, username, password)
+        LogIn._login(self, username, password)
         self.driver.implicitly_wait(5)
 
         # Manage Projects
-        Sharing.manage_project(self)
+        Sharing._manage_project(self)
 
         # share the project
-        Sharing.share_project(self, share_to_user)
+        Sharing._share_project(self, share_to_user)
 
         # obtain the success_text of sharing
         success_text = self.driver.\
@@ -65,7 +65,7 @@ class Sharing:
             text
 
         # delete the sharing
-        Sharing.delete_sharing(self)
+        Sharing._delete_sharing(self)
 
         # obtain the deleteSuccess text
         delete_text = self.driver.\
@@ -87,25 +87,25 @@ class Sharing:
 
         # Firstly share the project from one user
         # -- (username, password) to (sharedUser, sharedUserPw)
-        LogIn.login(self, username, password)
+        LogIn._login(self, username, password)
         self.driver.implicitly_wait(5)
 
         # Manage Projects
-        Sharing.manage_project(self)
+        Sharing._manage_project(self)
 
         # share the project
-        Sharing.share_project(self, shared_user)
+        Sharing._share_project(self, shared_user)
 
         # obtain the success_text of sharing
         success_text =\
             self.driver.find_element_by_xpath("//*[@id='feedback']").text
 
         # logout
-        Sharing.logout(self)
+        Sharing._logout(self)
 
         # login as the user who receives the shared project
         # - (sharedUser, sharedUserPw)
-        LogIn.login(self, shared_user, shared_user_pw)
+        LogIn._login(self, shared_user, shared_user_pw)
 
         self.driver.execute_script(
             "arguments[0].click()",
@@ -116,19 +116,19 @@ class Sharing:
 
         # rate as a sharedUser
         (statusA, statusB, statusC) = \
-            Rating.rate_group(self, username, password,
-                              project_name, evaluation_name,
-                              metagroup_name, group_name,
-                              rating_level, checkbox1, checkbox2, checkbox3)
+            Rating._rate_group(self, username, password,
+                               project_name, evaluation_name,
+                               metagroup_name, group_name,
+                               rating_level, checkbox1, checkbox2, checkbox3)
 
         # login as the (username, password) again to delete the sharing
         # - ensure to run for another time won't fail
-        LogIn.login(self, username, password)
+        LogIn._login(self, username, password)
         self.driver.implicitly_wait(5)
         # Manage Projects
-        Sharing.manage_project(self)
+        Sharing._manage_project(self)
         # delete the sharing
-        Sharing.delete_sharing(self)
+        Sharing._delete_sharing(self)
 
         Sharing.close(self)
 

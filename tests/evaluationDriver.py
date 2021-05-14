@@ -17,7 +17,7 @@ class Evaluation:
                                   username, password,
                                   project_name, evaluation_name):
 
-        LogIn.login(self, username, password)
+        LogIn._login(self, username, password)
         self.driver.execute_script("arguments[0].click()", self.driver.
                                    find_element_by_link_text(project_name))
         self.driver.implicitly_wait(5)
