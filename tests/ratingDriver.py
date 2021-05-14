@@ -1,12 +1,12 @@
 
 from selenium.webdriver import Chrome
-from loginDriver import logIn
+from loginDriver import LogIn
 
 import time
 
 
 
-class rating:
+class Rating:
     def __init__(self):
         self.driver = Chrome()
     
@@ -35,9 +35,9 @@ class rating:
         # both css-username and creation time are used for locating elements
         
         #get time creation of the evaluation
-        timeCreation = rating.getTimeCreationOfEvaluation(self)
+        timeCreation = Rating.getTimeCreationOfEvaluation(self)
         #set username in css format
-        css = rating.usernameToCssUsername(username)
+        css = Rating.usernameToCssUsername(username)
         return (timeCreation, css)
     
     
@@ -70,16 +70,16 @@ class rating:
         self.driver.find_element_by_css_selector("#Interacting\|" + css[1:] + timeCreation +"\|panel-heading .cateNames").click()
         
         #Rate the level
-        rating.rateInteractingLevel(self, css, timeCreation, level)
+        Rating.rateInteractingLevel(self, css, timeCreation, level)
         
         #Rate the checkboxes:
         status1=status2=status3 = False
         #here rate checkbox "a"
-        if choice1:   status1 = rating.rateInteractingCheckbox(self, username, timeCreation, "a")        
+        if choice1:   status1 = Rating.rateInteractingCheckbox(self, username, timeCreation, "a")
         #here rate checkbox "b"
-        if choice2:   status2 = rating.rateInteractingCheckbox(self, username, timeCreation, "b")
+        if choice2:   status2 = Rating.rateInteractingCheckbox(self, username, timeCreation, "b")
         #here rate checkbox "c"
-        if choice3:   status3 = rating.rateInteractingCheckbox(self, username, timeCreation, "c")
+        if choice3:   status3 = Rating.rateInteractingCheckbox(self, username, timeCreation, "c")
         
         #Save the rating
         self.driver.find_element_by_id("button").click()
@@ -106,17 +106,17 @@ class rating:
         # rate group as desired. For now it's limited to rate "Interacting" only
         
         #Select evaluation and the metagroup to rate  
-        rating.selectEvaluation(self, metagroupName)
+        Rating.selectEvaluation(self, metagroupName)
         self.driver.implicitly_wait(5)
         
         #select group to rate
-        rating.switchGroup(self, groupName)
+        Rating.switchGroup(self, groupName)
         
         # obtain creation time of the evaluation, and css version of username for locating element
-        (timeCreation, css) = rating.getCssUsernameAndTimeCreateOfEvaluation(self, username)
+        (timeCreation, css) = Rating.getCssUsernameAndTimeCreateOfEvaluation(self, username)
         
         #Rate the interacting category
-        (statusA, statusB, statusC) = rating.rateInteracting(self, css, username, timeCreation, ratinglevel, checkbox1, checkbox2, checkbox3)
+        (statusA, statusB, statusC) = Rating.rateInteracting(self, css, username, timeCreation, ratinglevel, checkbox1, checkbox2, checkbox3)
         
         return (statusA, statusB, statusC)
     
@@ -124,30 +124,30 @@ class rating:
     def driver_Rating_One_Group(self, username, password, projectName, evaluationName, metagroupName, groupName, ratinglevel, checkbox1=False, checkbox2=False, checkbox3=False):
         
         #login
-        logIn.Driver_Login(self,username, password) 
+        LogIn.Driver_Login(self, username, password)
 
         # Select project
-        rating.selectProject(self, projectName)  
+        Rating.selectProject(self, projectName)
         
         # Rate group
-        (statusA, statusB, statusC) = rating.Rate_Group(self, username, password, projectName, evaluationName, metagroupName, groupName, ratinglevel, checkbox1, checkbox2, checkbox3)
+        (statusA, statusB, statusC) = Rating.Rate_Group(self, username, password, projectName, evaluationName, metagroupName, groupName, ratinglevel, checkbox1, checkbox2, checkbox3)
         
-        rating.Close(self)
+        Rating.Close(self)
         return (statusA, statusB, statusC)
         
         
     def test_attendance(self, username, password, projectName, evaluationName, metagroupName, groupName, studentNameToCheck):
         #login
-        logIn.Driver_Login(self,username, password)
+        LogIn.Driver_Login(self, username, password)
         
         # Select project
-        rating.selectProject(self, projectName)
+        Rating.selectProject(self, projectName)
         
         #Select evaluation and the metagroup to rate  
-        rating.selectEvaluation(self, metagroupName)
+        Rating.selectEvaluation(self, metagroupName)
         
         #Select the group to rate
-        rating.switchGroup(self, groupName)
+        Rating.switchGroup(self, groupName)
         
         # Expand the "attendance" dropdown
         self.driver.find_element_by_css_selector("body > div.middle > div.middle-left > div:nth-child(2) > button:nth-child(5)").click()
@@ -164,7 +164,7 @@ class rating:
         self.driver.implicitly_wait(5)
         isResponse = response.is_selected()
         
-        rating.Close(self)
+        Rating.Close(self)
         
         return isResponse
         

@@ -1,10 +1,10 @@
 
-from loginDriver import logIn
+from loginDriver import LogIn
 from selenium.webdriver import Chrome
 
 import time
 
-class createProject:
+class CreateProject:
 
 
     def __init__(self):
@@ -32,21 +32,21 @@ class createProject:
     def driver_createProject(self, username, password, projectDescription, projectpassword, 
         studentFile, jsonFile):
         
-        logIn.Driver_Login(self,username, password) #login first
+        LogIn.Driver_Login(self, username, password) #login first
         self.driver.implicitly_wait(5)
         self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_link_text("Create New Project"))        
         self.driver.implicitly_wait(5)
 
-        createProject.setprojectDescription(self, projectDescription, projectpassword)
+        CreateProject.setprojectDescription(self, projectDescription, projectpassword)
         
         #createProject.download(self) #the xlsx file should be downloaded previously
         #time.sleep(2) #this step is necessary to download the file      
         
 
         
-        createProject.setRoster(self, studentFile)        
+        CreateProject.setRoster(self, studentFile)
 
-        createProject.setRubrics(self, jsonFile) 
+        CreateProject.setRubrics(self, jsonFile)
         
         
         #This is for submission
@@ -67,7 +67,7 @@ class createProject:
                 alertInfo = self.driver.find_element_by_xpath("/html/body/div[3]/div[2]/div/div/div/form/div[1]/p").text
         except:
             alertInfo = "no error"
-        createProject.Close(self)
+        CreateProject.Close(self)
         
         return (urlCurrent, alertInfo)
         
@@ -77,7 +77,7 @@ class createProject:
         alert1 = self.driver.find_element_by_xpath("//*[text()='Field must be between 3 and 150 characters long.']").text
         alert2 = self.driver.find_element_by_xpath("//*[text()='Field must be between 0 and 255 characters long.']").text
         self.driver.implicitly_wait(5)
-        createProject.Close(self)
+        CreateProject.Close(self)
         return (alert1, alert2)
         
     def getInvalidFileAlert(self, username, password, projectDescription, projectpassword, studentFile, jsonFile):
@@ -86,14 +86,14 @@ class createProject:
         alert1 = self.driver.find_element_by_xpath("/html/body/div[3]/div[2]/div/div/div/form/div[3]/p").text
         alert2 = self.driver.find_element_by_xpath("/html/body/div[3]/div[2]/div/div/div/form/div[4]/p").text
         self.driver.implicitly_wait(5)
-        createProject.Close(self)
+        CreateProject.Close(self)
         return (alert1, alert2)
     
     
     
     def testRubricFileDriver(self, username, password):
     
-        logIn.Driver_Login(self, username, password) #login first        
+        LogIn.Driver_Login(self, username, password) #login first
         self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_link_text("Create New Project"))
         self.driver.implicitly_wait(5)
         
@@ -109,33 +109,33 @@ class createProject:
 
     def testRubricFile_teamwork(self, username, password):
 
-        createProject.testRubricFileDriver(self, username, password)
+        CreateProject.testRubricFileDriver(self, username, password)
         self.driver.find_element_by_xpath("//*[text()='teamwork']").click()
         self.driver.implicitly_wait(5)
         self.driver.find_element_by_xpath("//*[text()='teamwork_scale3.json']").click()
         urlRubric = self.driver.current_url 
-        createProject.Close(self)
+        CreateProject.Close(self)
         return urlRubric
     
     def testRubricFile_infoProcess(self, username, password):
         
-        createProject.testRubricFileDriver(self, username, password)
+        CreateProject.testRubricFileDriver(self, username, password)
         self.driver.find_element_by_xpath("//*[text()='information_processing']").click()
         self.driver.implicitly_wait(5)
         self.driver.find_element_by_xpath("//*[text()='information_processing.json']").click()
         url = self.driver.current_url
-        createProject.Close(self)       
+        CreateProject.Close(self)
         return url
     
     def testRubricFile_communication(self, username, password):
         
-        createProject.testRubricFileDriver(self, username, password)        
+        CreateProject.testRubricFileDriver(self, username, password)
         self.driver.find_element_by_xpath("//*[text()='interpersonal_communication']").click()
         self.driver.implicitly_wait(5)
         self.driver.find_element_by_xpath("//*[text()='interpersonal_communication_scale3.json']").click()
         url = self.driver.current_url
         
-        createProject.Close(self)
+        CreateProject.Close(self)
         return url
     
     

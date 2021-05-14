@@ -1,12 +1,12 @@
 import unittest
 import time
 import os
-from signUpDriver import signUp
-from createProjectDriver import createProject
-from evaluationDriver import evaluation
-from ratingDriver import rating
+from signUpDriver import SignUp
+from createProjectDriver import CreateProject
+from evaluationDriver import Evaluation
+from ratingDriver import Rating
 
-class configure:
+class Configure:
     def configure_test_1_successOrExisted():
         (username, password) = ("sampleuser13@mailinator.com", "abcdefgh")  
         return (username, password)
@@ -51,12 +51,12 @@ class configure:
         
 
 class TestRating(unittest.TestCase):
-    '''
+
     def test_1_SignUp_Existed(self):
         #sign up
-        testSignUp = signUp()
-        (username, password) = configure.configure_test_1_successOrExisted() 
-        (urlCurrent, alertInfo) = testSignUp.Driver_SignUp(username, password)
+        testSignUp = SignUp()
+        (username, password) = Configure.configure_test_1_successOrExisted()
+        (urlCurrent, alertInfo) = testSignUp.SignUp(username, password)
 
 
       
@@ -65,8 +65,8 @@ class TestRating(unittest.TestCase):
     def test_3_CreateProject_Success(self):
         #create project
         
-        (username, password, projectname, projectdescription, studentFile, jsonFile) = configure.configure_test_3_CreateProject_Success()
-        createP = createProject()
+        (username, password, projectname, projectdescription, studentFile, jsonFile) = Configure.configure_test_3_CreateProject_Success()
+        createP = CreateProject()
         
         (urlCurrent, alertInfo)= createP.createProject_attempt(username, password, projectname, projectdescription, studentFile, jsonFile)
         
@@ -75,45 +75,45 @@ class TestRating(unittest.TestCase):
     def test_Evaluations(self):
         #create evaluation
 
-        (username, password, projectName, evaluationName) = configure.configure_test_Evaluations()
-        createE = evaluation()
+        (username, password, projectName, evaluationName) = Configure.configure_test_Evaluations()
+        createE = Evaluation()
         
         (projectURL, alertInfo) = createE.driver_createEvaluation_attempt(username, password, projectName, evaluationName)
-    '''
+
     
     
     def test_RatingTwoGroups(self):
         # select one group to rate; then select the 2nd group to rate
 
-        (username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3) = configure.configure_test_Rating()
+        (username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3) = Configure.configure_test_Rating()
         
-        createR = rating()        
+        createR = Rating()
         (statusA, statusB, statusC) = createR.driver_Rating_One_Group(username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3)
         if checkbox1: self.assertTrue(statusA)
         if checkbox2: self.assertTrue(statusB)
         if checkbox3: self.assertTrue(statusC)
         
         #rate another group
-        createR = rating() 
-        (username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3) = configure.configure_test_Rating_Another_Group()
+        createR = Rating()
+        (username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3) = Configure.configure_test_Rating_Another_Group()
         (statusA, statusB, statusC) = createR.driver_Rating_One_Group(username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3)
         if checkbox1: self.assertTrue(statusA)
         if checkbox2: self.assertTrue(statusB)
         if checkbox3: self.assertTrue(statusC)
 
-    '''    
+
     
 
     def test_Attendance(self):        
         #test checkbox of the attendance
         
-        (username, password, projectName, evaluationName, metagroupName, groupName, studentNameToCheck) = configure.configure_test_attendance()
+        (username, password, projectName, evaluationName, metagroupName, groupName, studentNameToCheck) = Configure.configure_test_attendance()
         
-        createR = rating()        
+        createR = Rating()
         response = createR.test_attendance(username, password, projectName, evaluationName, metagroupName, groupName, studentNameToCheck)
         
         self.assertTrue(response)
-    '''
+
     
 if __name__ == '__main__':
     unittest.main()  

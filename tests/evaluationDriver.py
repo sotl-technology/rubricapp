@@ -1,10 +1,10 @@
 
 from selenium.webdriver import Chrome
-from loginDriver import logIn
+from loginDriver import LogIn
 
 import time
 
-class evaluation:
+class Evaluation:
     
     def __init__(self):
         self.driver = Chrome()
@@ -14,7 +14,7 @@ class evaluation:
         
     def driver_createEvaluation_attempt(self, username, password, projectName, evaluationName):
         
-        logIn.Driver_Login(self,username, password)
+        LogIn.Driver_Login(self, username, password)
         self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_link_text(projectName))
         self.driver.implicitly_wait(5)        
         projectURL = self.driver.current_url
@@ -30,7 +30,7 @@ class evaluation:
             alertInfo = "no error"
         
         self.driver.implicitly_wait(5)
-        evaluation.Close(self)
+        Evaluation.Close(self)
         
         return (projectURL,alertInfo)
         

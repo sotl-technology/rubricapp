@@ -1,10 +1,10 @@
 import unittest
 import os
-from signUpDriver import signUp
-from createProjectDriver import createProject
+from signUpDriver import SignUp
+from createProjectDriver import CreateProject
 import time
 
-class configure:
+class Configure:
     def configure_test_1_successOrExisted():
         (username, password) = ("sampleuser_CreateProject@mail.com", "abcdefgh")  
         return (username, password)
@@ -37,15 +37,15 @@ class TestCreateProject(unittest.TestCase):
     def test_1_SignUp_Existed(self):
         #sign up
         
-        testSignUp = signUp()
-        (username, password) = configure.configure_test_1_successOrExisted()
-        (urlCurrent, alertInfo) = testSignUp.Driver_SignUp(username, password)
+        testSignUp = SignUp()
+        (username, password) = Configure.configure_test_1_successOrExisted()
+        (urlCurrent, alertInfo) = testSignUp.SignUp(username, password)
 
     def test_3_CreateProject_Success(self):        
         #success or duplicate project name error
 
-        (username, password, projectname, projectdescription, studentFile, jsonFile) = configure.configure_test_3_CreateProject_Success()
-        createP = createProject()
+        (username, password, projectname, projectdescription, studentFile, jsonFile) = Configure.configure_test_3_CreateProject_Success()
+        createP = CreateProject()
         
         (urlCurrent, alertInfo)= createP.createProject_attempt(username, password, projectname, projectdescription, studentFile, jsonFile)
              
@@ -67,9 +67,9 @@ class TestCreateProject(unittest.TestCase):
     def test_3_1_CreateProject_InvalidProjectNameAndDescription(self):
         #invalid length of project name and description 
        
-        (username, password, projectname, projectdescription, studentFile, jsonFile) = configure.configure_test_3_1_CreateProject_InvalidProjectNameAndDescription()
+        (username, password, projectname, projectdescription, studentFile, jsonFile) = Configure.configure_test_3_1_CreateProject_InvalidProjectNameAndDescription()
         
-        createP = createProject()
+        createP = CreateProject()
         
         (alert1, alert2) = createP.getProjectNameAndDescriptionAlert(username, password, projectname, projectdescription, studentFile, jsonFile)
 
@@ -103,8 +103,8 @@ class TestCreateProject(unittest.TestCase):
     def test_3_0_Rubric_file_teamwork(self):
         #test the rubric file - teamwork_scale3 location
         
-        (username, password) = configure.configure_test_1_successOrExisted()    
-        createP = createProject()
+        (username, password) = Configure.configure_test_1_successOrExisted()
+        createP = CreateProject()
         
         url = createP.testRubricFile_teamwork(username, password)
 
@@ -117,8 +117,8 @@ class TestCreateProject(unittest.TestCase):
     def test_3_0_Rubric_file_infoProcess(self):
         #test the rubric file - information_processing location
         
-        (username, password) = configure.configure_test_1_successOrExisted()      
-        createP = createProject()
+        (username, password) = Configure.configure_test_1_successOrExisted()
+        createP = CreateProject()
         
         url = createP.testRubricFile_infoProcess(username, password)
 
@@ -128,8 +128,8 @@ class TestCreateProject(unittest.TestCase):
     
     def test_3_0_Rubric_file_communication(self):
         #test the rubric file - interpersonal_communication location
-        (username, password) = configure.configure_test_1_successOrExisted()      
-        createP = createProject()
+        (username, password) = Configure.configure_test_1_successOrExisted()
+        createP = CreateProject()
         
         url = createP.testRubricFile_communication(username, password)
         

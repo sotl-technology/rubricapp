@@ -3,7 +3,7 @@ from selenium.webdriver import Chrome
 import time
 
 
-class logIn:
+class LogIn:
 
 
     def __init__(self):
@@ -35,7 +35,7 @@ class logIn:
         #successful login
         self.Driver_Login(username, password)
         urlCurrent = self.driver.current_url
-        logIn.Close(self)
+        LogIn.Close(self)
         return urlCurrent
     
     def Close(self):
@@ -48,14 +48,14 @@ class logIn:
         # the "text() = user doesn\'t exist" somehow cannot work -- maybe due to "doesn't" in there
         self.Driver_Login(username, password)
         alert1 = self.driver.find_element_by_xpath("//*[text()[contains(.,'user doesn')]]").text
-        logIn.Close(self)
+        LogIn.Close(self)
         return alert1
         
     def getPasswordAlert(self,username, password): #2
         #failed login due to password too short or too long(should be between 8 - 80)
         self.Driver_Login(username, password)
         alertInfo = self.driver.find_element_by_xpath("//*[text()='Field must be between 8 and 80 characters long.']").text        
-        logIn.Close(self)
+        LogIn.Close(self)
         return alertInfo
         
     def getInvalidEmailAlert(self, username, password): #3
@@ -63,13 +63,13 @@ class logIn:
         self.Driver_Login(username, password)
         alert1 = self.driver.find_element_by_xpath("//*[text()='Invalid email']").text 
         alert2 = self.driver.find_element_by_xpath("//*[text()='Field must be between 8 and 80 characters long.']").text 
-        logIn.Close(self)       
+        LogIn.Close(self)
         return (alert1, alert2)
         
     def getIncorrectPasswordAlert(self, username, password): #4
         #failed login due to incorrect password 
         self.Driver_Login(username, password)
         alertInfo = self.driver.find_element_by_xpath("//*[text()='password not correct']").text 
-        logIn.Close(self)
+        LogIn.Close(self)
         return alertInfo
         

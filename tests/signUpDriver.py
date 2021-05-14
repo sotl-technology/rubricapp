@@ -4,7 +4,7 @@ from selenium.webdriver import Chrome
 import time
 
 
-class signUp:   
+class SignUp:
     
     def __init__(self):
         
@@ -19,10 +19,10 @@ class signUp:
         self.driver.find_element_by_css_selector(".btn").click()        
         self.driver.implicitly_wait(5)
     
-    def Driver_SignUp(self, username, password):
+    def SignUp(self, username, password):
         
         #setup user
-        signUp.setUpUser(self, username, password, password) #password and checkPw should be the same in this case
+        SignUp.setUpUser(self, username, password, password) #password and checkPw should be the same in this case
                 
         #obtain current url
         urlCurrent = self.driver.current_url 
@@ -30,7 +30,7 @@ class signUp:
         #obtain error message if duplicate username happens
         alertInfo = self.driver.find_element_by_class_name("alert-info").text
         
-        signUp.Close(self)
+        SignUp.Close(self)
          
         return (urlCurrent, alertInfo)
         
@@ -38,7 +38,7 @@ class signUp:
         #check the link to login page
         self.driver.find_element_by_link_text("Already have an account? Log in.").click()
         loginUrl = self.driver.current_url
-        signUp.Close(self)
+        SignUp.Close(self)
         
         return loginUrl
     
@@ -46,11 +46,11 @@ class signUp:
     def Driver_SignUp_InvalidCheckPassword(self, username, password, checkPw):
     
         #setup user
-        signUp.setUpUser(self, username, password, checkPw)   
+        SignUp.setUpUser(self, username, password, checkPw)
         
         alert1 = self.driver.find_element_by_xpath("//*[text()='Passwords must match']").text
         alert2 = self.driver.find_element_by_xpath("//*[text()='Field must be between 8 and 80 characters long.']").text  
-        signUp.Close(self)
+        SignUp.Close(self)
         
         return (alert1, alert2)
         
