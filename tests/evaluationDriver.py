@@ -12,9 +12,9 @@ class Evaluation:
     def Close(self):
         self.driver.quit()
         
-    def driver_createEvaluation_attempt(self, username, password, projectName, evaluationName):
+    def CreateEvaluation_attempt(self, username, password, projectName, evaluationName):
         
-        LogIn.Driver_Login(self, username, password)
+        LogIn.Login(self, username, password)
         self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_link_text(projectName))
         self.driver.implicitly_wait(5)        
         projectURL = self.driver.current_url
@@ -33,7 +33,3 @@ class Evaluation:
         Evaluation.Close(self)
         
         return (projectURL,alertInfo)
-        
-        
-if __name__ == '__main__':
-    unittest.main()  

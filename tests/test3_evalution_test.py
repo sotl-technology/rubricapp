@@ -50,7 +50,7 @@ class TestEvalution(unittest.TestCase):
         (username, password, projectName, evaluationName) = Configure.configure_test_Evaluations()
         createE = Evaluation()
         
-        (projectURL, alertInfo) = createE.driver_createEvaluation_attempt(username, password, projectName, evaluationName)
+        (projectURL, alertInfo) = createE.CreateEvaluation_attempt(username, password, projectName, evaluationName)
         
         IsAtEvalCreatePage = projectURL == "http://localhost:5000/load_project/" + username + username + projectName + "full/noAlert"
         

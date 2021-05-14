@@ -29,10 +29,10 @@ class CreateProject:
     def setRubrics(self, jsonFile):
         self.driver.find_element_by_id("json_file").send_keys(jsonFile)
     
-    def driver_createProject(self, username, password, projectDescription, projectpassword, 
-        studentFile, jsonFile):
+    def CreateProject(self, username, password, projectDescription, projectpassword,
+                      studentFile, jsonFile):
         
-        LogIn.Driver_Login(self, username, password) #login first
+        LogIn.Login(self, username, password) #login first
         self.driver.implicitly_wait(5)
         self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_link_text("Create New Project"))        
         self.driver.implicitly_wait(5)
@@ -57,7 +57,7 @@ class CreateProject:
     
     def createProject_attempt(self, username, password, projectDescription, projectpassword, studentFile, jsonFile): # if run the 2nd time, the control flow would go to duplicate username
 
-        self.driver_createProject(username, password, projectDescription, projectpassword, studentFile, jsonFile)  
+        self.CreateProject(username, password, projectDescription, projectpassword, studentFile, jsonFile)
       
         urlCurrent = self.driver.current_url
         
@@ -73,7 +73,7 @@ class CreateProject:
         
         
     def getProjectNameAndDescriptionAlert(self, username, password, projectDescription, projectpassword, studentFile, jsonFile):
-        self.driver_createProject(username, password, projectDescription, projectpassword, studentFile, jsonFile) 
+        self.CreateProject(username, password, projectDescription, projectpassword, studentFile, jsonFile)
         alert1 = self.driver.find_element_by_xpath("//*[text()='Field must be between 3 and 150 characters long.']").text
         alert2 = self.driver.find_element_by_xpath("//*[text()='Field must be between 0 and 255 characters long.']").text
         self.driver.implicitly_wait(5)
@@ -81,7 +81,7 @@ class CreateProject:
         return (alert1, alert2)
         
     def getInvalidFileAlert(self, username, password, projectDescription, projectpassword, studentFile, jsonFile):
-        self.driver_createProject(username, password, projectDescription, projectpassword, studentFile, jsonFile)
+        self.CreateProject(username, password, projectDescription, projectpassword, studentFile, jsonFile)
         #these error messages are not showing right now, change later to robust xpath
         alert1 = self.driver.find_element_by_xpath("/html/body/div[3]/div[2]/div/div/div/form/div[3]/p").text
         alert2 = self.driver.find_element_by_xpath("/html/body/div[3]/div[2]/div/div/div/form/div[4]/p").text
@@ -93,7 +93,7 @@ class CreateProject:
     
     def testRubricFileDriver(self, username, password):
     
-        LogIn.Driver_Login(self, username, password) #login first
+        LogIn.Login(self, username, password) #login first
         self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_link_text("Create New Project"))
         self.driver.implicitly_wait(5)
         
@@ -106,6 +106,7 @@ class CreateProject:
         self.driver.implicitly_wait(5)
         window_after = self.driver.window_handles[1]
         self.driver.switch_to_window(window_after)
+        self.driver.implicitly_wait(5)
 
     def testRubricFile_teamwork(self, username, password):
 

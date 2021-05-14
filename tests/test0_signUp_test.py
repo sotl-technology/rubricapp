@@ -35,7 +35,7 @@ class TestSignUp(unittest.TestCase):
 
     def test_signUp_loginLink(self):
         testSignUp = SignUp()
-        loginUrl = testSignUp.Driver_SignUp_loginLink()
+        loginUrl = testSignUp.SignUp_loginLink()
 
         isLoginUrl = loginUrl == "http://localhost:5000/login"
 
@@ -50,7 +50,7 @@ class TestSignUp(unittest.TestCase):
 
         testSignUp = SignUp()
         (alert1, alert2) = \
-            testSignUp.Driver_SignUp_InvalidCheckPassword(username, password, checkPassword)
+            testSignUp.SignUp_InvalidCheckPassword(username, password, checkPassword)
 
         IsAlert1 = alert1 == "Passwords must match"
         IsAlert2 = alert2 == "Field must be between 8 and 80 characters long."

@@ -121,10 +121,10 @@ class Rating:
         return (statusA, statusB, statusC)
     
     
-    def driver_Rating_One_Group(self, username, password, projectName, evaluationName, metagroupName, groupName, ratinglevel, checkbox1=False, checkbox2=False, checkbox3=False):
+    def Rating_One_Group(self, username, password, projectName, evaluationName, metagroupName, groupName, ratinglevel, checkbox1=False, checkbox2=False, checkbox3=False):
         
         #login
-        LogIn.Driver_Login(self, username, password)
+        LogIn.Login(self, username, password)
 
         # Select project
         Rating.selectProject(self, projectName)
@@ -138,7 +138,7 @@ class Rating:
         
     def test_attendance(self, username, password, projectName, evaluationName, metagroupName, groupName, studentNameToCheck):
         #login
-        LogIn.Driver_Login(self, username, password)
+        LogIn.Login(self, username, password)
         
         # Select project
         Rating.selectProject(self, projectName)

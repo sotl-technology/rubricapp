@@ -34,7 +34,7 @@ class SignUp:
          
         return (urlCurrent, alertInfo)
         
-    def Driver_SignUp_loginLink(self):
+    def SignUp_loginLink(self):
         #check the link to login page
         self.driver.find_element_by_link_text("Already have an account? Log in.").click()
         loginUrl = self.driver.current_url
@@ -43,7 +43,7 @@ class SignUp:
         return loginUrl
     
     
-    def Driver_SignUp_InvalidCheckPassword(self, username, password, checkPw):
+    def SignUp_InvalidCheckPassword(self, username, password, checkPw):
     
         #setup user
         SignUp.setUpUser(self, username, password, checkPw)

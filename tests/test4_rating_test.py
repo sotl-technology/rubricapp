@@ -78,7 +78,7 @@ class TestRating(unittest.TestCase):
         (username, password, projectName, evaluationName) = Configure.configure_test_Evaluations()
         createE = Evaluation()
         
-        (projectURL, alertInfo) = createE.driver_createEvaluation_attempt(username, password, projectName, evaluationName)
+        (projectURL, alertInfo) = createE.CreateEvaluation_attempt(username, password, projectName, evaluationName)
 
     
     
@@ -88,7 +88,7 @@ class TestRating(unittest.TestCase):
         (username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3) = Configure.configure_test_Rating()
         
         createR = Rating()
-        (statusA, statusB, statusC) = createR.driver_Rating_One_Group(username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3)
+        (statusA, statusB, statusC) = createR.Rating_One_Group(username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3)
         if checkbox1: self.assertTrue(statusA)
         if checkbox2: self.assertTrue(statusB)
         if checkbox3: self.assertTrue(statusC)
@@ -96,7 +96,7 @@ class TestRating(unittest.TestCase):
         #rate another group
         createR = Rating()
         (username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3) = Configure.configure_test_Rating_Another_Group()
-        (statusA, statusB, statusC) = createR.driver_Rating_One_Group(username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3)
+        (statusA, statusB, statusC) = createR.Rating_One_Group(username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3)
         if checkbox1: self.assertTrue(statusA)
         if checkbox2: self.assertTrue(statusB)
         if checkbox3: self.assertTrue(statusC)

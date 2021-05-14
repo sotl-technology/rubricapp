@@ -10,7 +10,7 @@ class LogIn:
         
         self.driver = Chrome() 
 
-    def Driver_Login(self, username, password):
+    def Login(self, username, password):
         
         self.driver.get("http://localhost:5000")
         self.driver.find_element_by_link_text("Login").click()    
@@ -23,7 +23,7 @@ class LogIn:
         
         self.driver.find_element_by_css_selector(".btn").click()
     
-    def Driver_Login_signUpLink(self):
+    def Login_signUpLink(self):
         self.driver.get("http://localhost:5000")
         self.driver.find_element_by_link_text("Login").click()
         self.driver.find_element_by_link_text("Don't yet have an account? Sign up.").click()
@@ -33,7 +33,7 @@ class LogIn:
             
     def LoginAttempt(self, username, password): 
         #successful login
-        self.Driver_Login(username, password)
+        self.Login(username, password)
         urlCurrent = self.driver.current_url
         LogIn.Close(self)
         return urlCurrent
@@ -46,21 +46,21 @@ class LogIn:
         #failed login due to "user doesn't exist"
         
         # the "text() = user doesn\'t exist" somehow cannot work -- maybe due to "doesn't" in there
-        self.Driver_Login(username, password)
+        self.Login(username, password)
         alert1 = self.driver.find_element_by_xpath("//*[text()[contains(.,'user doesn')]]").text
         LogIn.Close(self)
         return alert1
         
     def getPasswordAlert(self,username, password): #2
         #failed login due to password too short or too long(should be between 8 - 80)
-        self.Driver_Login(username, password)
+        self.Login(username, password)
         alertInfo = self.driver.find_element_by_xpath("//*[text()='Field must be between 8 and 80 characters long.']").text        
         LogIn.Close(self)
         return alertInfo
         
     def getInvalidEmailAlert(self, username, password): #3
         #failed login due to invalid email (no @), along with password too short 
-        self.Driver_Login(username, password)
+        self.Login(username, password)
         alert1 = self.driver.find_element_by_xpath("//*[text()='Invalid email']").text 
         alert2 = self.driver.find_element_by_xpath("//*[text()='Field must be between 8 and 80 characters long.']").text 
         LogIn.Close(self)
@@ -68,7 +68,7 @@ class LogIn:
         
     def getIncorrectPasswordAlert(self, username, password): #4
         #failed login due to incorrect password 
-        self.Driver_Login(username, password)
+        self.Login(username, password)
         alertInfo = self.driver.find_element_by_xpath("//*[text()='password not correct']").text 
         LogIn.Close(self)
         return alertInfo

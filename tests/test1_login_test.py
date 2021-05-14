@@ -38,7 +38,7 @@ class TestLogin(unittest.TestCase):
         #test the signUp link on login page
         
         logInPage = LogIn()
-        signUpUrl = logInPage.Driver_Login_signUpLink()
+        signUpUrl = logInPage.Login_signUpLink()
         
         isLoginUrl = signUpUrl == "http://localhost:5000/signup"
         
