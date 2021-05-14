@@ -7,145 +7,176 @@ from evaluationDriver import Evaluation
 from ratingDriver import Rating
 from sharingDriver import Sharing
 
+
 class Configure:
 
     def configure_test_1_successOrExisted():
-        (username, password) = ("instructor1@example.com", "abcdefgh")  
+        (username, password) = ("instructor1@example.com", "abcdefgh")
         return (username, password)
-        
-    def configure_test_3_CreateProject_Success():
-        #both xlsx and json files are downloaded in the selenium/tests directory
-        (username, password) = ("instructor1@example.com", "abcdefgh") 
-        (projectname, projectdescription) =("Teamwork2", "A sample project using an ELPISSrubric for Teamwork2")       
-        (studentFile, jsonFile) = (os.getcwd() + "/sample_roster.xlsx", os.getcwd() + "/teamwork_scale3.json")
-        return (username, password, projectname, projectdescription, studentFile, jsonFile)
 
+    def configure_test_3_CreateProject_Success():
+        # both xlsx and json files are downloaded in the selenium/tests
+        (username, password) = ("instructor1@example.com", "abcdefgh")
+        (projectname, projectdescription) = \
+            ("Teamwork2",
+             "A sample project using an ELPISSrubric for Teamwork2")
+        (studentFile, jsonFile) = (
+            os.getcwd() + "/sample_roster.xlsx",
+            os.getcwd() + "/teamwork_scale3.json")
+        return (username, password, projectname,
+                projectdescription, studentFile, jsonFile)
 
     def configure_test_Evaluations():
-        (username, password) = ("instructor1@example.com", "abcdefgh") 
+        (username, password) = ("instructor1@example.com", "abcdefgh")
         (projectName, evaluationName) = ("Teamwork2", "Week 2")
         return (username, password, projectName, evaluationName)
-    
+
     def configure_test_Rating():
         (username, password) = ("sampleuser13@mailinator.com", "abcdefgh")
         (projectName, evaluationName) = ("Teamwork2", "Week 1")
         (metagroupName, groupName) = ("b", "O")
-        (level, checkbox1, checkbox2, checkbox3) = ("Sporadically", True,True,False)
-        return (username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3)
-
+        (level, checkbox1, checkbox2, checkbox3) = \
+            ("Sporadically", True, True, False)
+        return (username, password, projectName, evaluationName,
+                metagroupName, groupName, level,
+                checkbox1, checkbox2, checkbox3)
 
     def configure_test_Rating_Another_Group():
-        (username, password) = ("sampleuser13@mailinator.com", "abcdefgh")
+        (username, password) = \
+            ("sampleuser13@mailinator.com", "abcdefgh")
         (projectName, evaluationName) = ("Teamwork2", "Week 1")
         (metagroupName, groupName) = ("b", "F")
-        (level, checkbox1, checkbox2, checkbox3) = ("Frequently", False, False, True) 
-        return (username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3)
-        
-    
+        (level, checkbox1, checkbox2, checkbox3) =\
+            ("Frequently", False, False, True)
+        return (username, password, projectName, evaluationName,
+                metagroupName, groupName, level,
+                checkbox1, checkbox2, checkbox3)
+
     def configure_test_sharingAndDelete():
-        (username, password, shareToUser) = ("instructor1@example.com", "abcdefgh", "ta@example.com")
+        (username, password, shareToUser) = ("instructor1@example.com",
+                                             "abcdefgh", "ta@example.com")
         return (username, password, shareToUser)
-        
+
     def configure_test_sharingAndModifySharing():
         (projectName, evaluationName) = ("Teamwork2", "Week 2")
         (metagroupName, groupName) = ("b", "F")
-        (ratinglevel, checkbox1, checkbox2, checkbox3) = ("Rarely", False,True,True)
-        return (projectName, evaluationName, metagroupName, groupName, ratinglevel, checkbox1, checkbox2, checkbox3)
-        
+        (ratinglevel, checkbox1, checkbox2, checkbox3) = \
+            ("Rarely", False, True, True)
+        return (projectName, evaluationName, metagroupName,
+                groupName, ratinglevel, checkbox1, checkbox2, checkbox3)
+
 
 class TestSharing(unittest.TestCase):
 
-    def test_1_SignUp_Existed(self):
-        #sign up
-        testSignUp = SignUp()
+    def test_1_sign_up_existed(self):
+        # sign up
+        test_sign_up = SignUp()
         (username, password) = Configure.configure_test_1_successOrExisted()
-        (urlCurrent, alertInfo) = testSignUp.sign_up(username, password)
-      
-    def test_2_CreateProject_Success(self):
-        #create project        
+        (url_current, alert_info) = test_sign_up.sign_up(username, password)
 
-        (username, password, projectname, projectdescription, studentFile, jsonFile) = Configure.configure_test_3_CreateProject_Success()
-        createP = CreateProject()
-        
-        (urlCurrent, alertInfo)= createP.create_project_attempt(username, password, projectname, projectdescription, studentFile, jsonFile)
+    def test_2_create_project_success(self):
+        # create project
 
-        
-    
-    def test_3_Evaluations(self):
-        #create evalution
-        
-        (username, password, projectName, evaluationName) = Configure.configure_test_Evaluations()
-        createE = Evaluation()
-        
-        (projectURL, alertInfo) = createE.create_evaluation_attempt(username, password, projectName, evaluationName)
-   
-    
-    def test_4_RatingTwoGroups(self):
-        # select one group to rate; then select the 2nd group to rate
+        (username, password, project_name,
+         project_description, student_file, json_file) =\
+            Configure.configure_test_3_CreateProject_Success()
+        create_p = CreateProject()
 
-        (username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3) = Configure.configure_test_Rating()
-        
-        createR = Rating()
-        (statusA, statusB, statusC) = createR.rating_one_group(username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3)
-        if checkbox1: self.assertTrue(statusA)
-        if checkbox2: self.assertTrue(statusB)
-        if checkbox3: self.assertTrue(statusC)
-        
-        #rate another group
-        createR = Rating()
-        (username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3) = Configure.configure_test_Rating_Another_Group()
-        (statusA, statusB, statusC) = createR.rating_one_group(username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3)
-        if checkbox1: self.assertTrue(statusA)
-        if checkbox2: self.assertTrue(statusB)
-        if checkbox3: self.assertTrue(statusC)
-    
+        (url_current, alert_info) = \
+            create_p.create_project_attempt(username, password,
+                                            project_name, project_description,
+                                            student_file, json_file)
 
-    
-    def test_7_sharingAndDelete(self):
+    def test_3_evaluations(self):
+        # create evaluation
+        (username, password, projectName, evaluationName) = \
+            Configure.configure_test_Evaluations()
+        create_e = Evaluation()
+        (project_url, alert_info) =\
+            create_e.create_evaluation_attempt(
+                username, password, projectName, evaluationName)
+
+    def test_4_rating_two_groups(self):
+
+        # Select one group to rate
+        # then select the 2nd group to rate
+
+        (username, password, project_name, evaluation_name,
+         metagroup_name, group_name, level,
+         checkbox1, checkbox2, checkbox3) = \
+            Configure.configure_test_Rating()
+
+        create_r = Rating()
+        (statusA, statusB, statusC) =\
+            create_r.rating_one_group(username, password,
+                                      project_name, evaluation_name,
+                                      metagroup_name, group_name,
+                                      level, checkbox1, checkbox2, checkbox3)
+        if checkbox1:
+            self.assertTrue(statusA)
+        if checkbox2:
+            self.assertTrue(statusB)
+        if checkbox3:
+            self.assertTrue(statusC)
+
+        # rate another group
+        create_r = Rating()
+        (username, password, project_name,
+         evaluation_name, metagroup_name, group_name,
+         level, checkbox1, checkbox2, checkbox3) = \
+            Configure.configure_test_Rating_Another_Group()
+        (statusA, statusB, statusC) = \
+            create_r.rating_one_group(username, password, project_name,
+                                      evaluation_name, metagroup_name,
+                                      group_name, level,
+                                      checkbox1, checkbox2, checkbox3)
+        if checkbox1:
+            self.assertTrue(statusA)
+        if checkbox2:
+            self.assertTrue(statusB)
+        if checkbox3:
+            self.assertTrue(statusC)
+
+    def test_5_sharing_and_delete(self):
         # share the project and then delete the sharing
-        
-        (username, password, shareToUser) = Configure.configure_test_sharingAndDelete()
-        
-        createS = Sharing()
-        
-        (successText, deleteText) = createS.sharingProjectAndDelete(username, password, shareToUser)
-        IsSuccessText = successText == "Permission successfully created"
-        IsDeleteText = deleteText == "successfully delete permission"
-        
-        
-        self.assertTrue(IsSuccessText and IsDeleteText, deleteText)
 
-    def test_8_sharingAndModifySharing(self):
+        (username, password, shareToUser) = \
+            Configure.configure_test_sharingAndDelete()
+
+        create_s = Sharing()
+
+        (success_text, delete_text) = create_s.\
+            sharing_project_and_delete(username, password, shareToUser)
+        is_success_text = success_text == "Permission successfully created"
+        is_delete_text = delete_text == "successfully delete permission"
+
+        self.assertTrue(is_success_text and is_delete_text, delete_text)
+
+    def test_6_sharing_and_modify_sharing(self):
         # share the project and modify the rating from the sharedUser
-        
-        (username, password, shareToUser, sharedUserPw) = ("instructor1@example.com", "abcdefgh", "ta@example.com", "abcdefgh")
-                
-        (projectName, evaluationName, metagroupName, groupName, ratinglevel, checkbox1, checkbox2, checkbox3) = Configure.configure_test_sharingAndModifySharing()
-        
-        createS = Sharing()
-        
-        (statusA, statusB, statusC) = createS.sharingProjectAndCheck(username, password, shareToUser, sharedUserPw, projectName, evaluationName, metagroupName, groupName, ratinglevel, checkbox1, checkbox2, checkbox3)
-        
 
-        if checkbox1: self.assertTrue(statusA)
-        if checkbox2: self.assertTrue(statusB)
-        if checkbox3: self.assertTrue(statusC)
-    
+        (username, password, shareToUser, sharedUserPw) =\
+            ("instructor1@example.com", "abcdefgh",
+             "ta@example.com", "abcdefgh")
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+        (project_name, evaluation_name,
+         metagroup_name, group_name, rating_level,
+         checkbox1, checkbox2, checkbox3) = \
+            Configure.configure_test_sharingAndModifySharing()
+
+        create_s = Sharing()
+
+        (statusA, statusB, statusC) =\
+            create_s.sharing_project_and_check(username, password,
+                                               shareToUser, sharedUserPw,
+                                               project_name,
+                                               evaluation_name, metagroup_name,
+                                               group_name, rating_level,
+                                               checkbox1, checkbox2, checkbox3)
+
+        if checkbox1:
+            self.assertTrue(statusA)
+        if checkbox2:
+            self.assertTrue(statusB)
+        if checkbox3:
+            self.assertTrue(statusC)
