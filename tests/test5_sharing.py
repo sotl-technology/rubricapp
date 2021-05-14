@@ -6,64 +6,140 @@ from createProjectDriver import CreateProject
 from evaluationDriver import Evaluation
 from ratingDriver import Rating
 from sharingDriver import Sharing
+from configure import *
 
 
 class Configure:
 
-    def configure_test_1_successOrExisted():
+    def configure_test_1_success_or_existed():
         (username, password) = ("instructor1@example.com", "abcdefgh")
-        return (username, password)
+        conf = ConfigureUsernamePassword()
+        conf.username = username
+        conf.password = password
+        return conf
 
-    def configure_test_3_CreateProject_Success():
+    def configure_test_3_create_project_success():
         # both xlsx and json files are downloaded in the selenium/tests
         (username, password) = ("instructor1@example.com", "abcdefgh")
-        (projectname, projectdescription) = \
+        (project_name, project_description) = \
             ("Teamwork2",
              "A sample project using an ELPISSrubric for Teamwork2")
-        (studentFile, jsonFile) = (
+        (student_file, json_file) = (
             os.getcwd() + "/sample_roster.xlsx",
             os.getcwd() + "/teamwork_scale3.json")
-        return (username, password, projectname,
-                projectdescription, studentFile, jsonFile)
 
-    def configure_test_Evaluations():
+        conf1 = ConfigureUsernamePassword()
+        conf1.username = username
+        conf1.password = password
+
+        conf2 = ConfigureProject
+        conf2.project_name = project_name
+        conf2.project_description = project_description
+        conf2.student_file = student_file
+        conf2.json_file = json_file
+
+        return (conf1, conf2)
+
+    def configure_test_evaluations():
         (username, password) = ("instructor1@example.com", "abcdefgh")
-        (projectName, evaluationName) = ("Teamwork2", "Week 2")
-        return (username, password, projectName, evaluationName)
+        (project_name, evaluation_name) = ("Teamwork2", "Week 2")
+        conf1 = ConfigureUsernamePassword()
+        conf1.username = username
+        conf1.password = password
 
-    def configure_test_Rating():
+        conf2 = ConfigureEvaluation
+        conf2.project_name = project_name
+        conf2.evaluation_name = evaluation_name
+
+        return (conf1, conf2)
+
+    def configure_test_rating():
         (username, password) = ("sampleuser13@mailinator.com", "abcdefgh")
-        (projectName, evaluationName) = ("Teamwork2", "Week 1")
-        (metagroupName, groupName) = ("b", "O")
+        (project_name, evaluation_name) = ("Teamwork2", "Week 1")
+        (metagroup_name, group_name) = ("b", "O")
         (level, checkbox1, checkbox2, checkbox3) = \
             ("Sporadically", True, True, False)
-        return (username, password, projectName, evaluationName,
-                metagroupName, groupName, level,
-                checkbox1, checkbox2, checkbox3)
+        conf1 = ConfigureUsernamePassword()
+        conf1.username = username
+        conf1.password = password
 
-    def configure_test_Rating_Another_Group():
+        conf2 = ConfigureEvaluation
+        conf2.project_name = project_name
+        conf2.evaluation_name = evaluation_name
+
+        conf3 = ConfigureRating
+        conf3.metagroup_name = metagroup_name
+        conf3.group_name = group_name
+        conf3.level = level
+        conf3.checkbox1 = checkbox1
+        conf3.checkbox2 = checkbox2
+        conf3.checkbox3 = checkbox3
+
+        return (conf1, conf2, conf3)
+
+    def configure_test_rating_another_group():
         (username, password) = \
             ("sampleuser13@mailinator.com", "abcdefgh")
-        (projectName, evaluationName) = ("Teamwork2", "Week 1")
-        (metagroupName, groupName) = ("b", "F")
+        (project_name, evaluation_name) = ("Teamwork2", "Week 1")
+        (metagroup_name, group_name) = ("b", "F")
         (level, checkbox1, checkbox2, checkbox3) =\
             ("Frequently", False, False, True)
-        return (username, password, projectName, evaluationName,
-                metagroupName, groupName, level,
-                checkbox1, checkbox2, checkbox3)
+        conf1 = ConfigureUsernamePassword()
+        conf1.username = username
+        conf1.password = password
 
-    def configure_test_sharingAndDelete():
-        (username, password, shareToUser) = ("instructor1@example.com",
-                                             "abcdefgh", "ta@example.com")
-        return (username, password, shareToUser)
+        conf2 = ConfigureEvaluation
+        conf2.project_name = project_name
+        conf2.evaluation_name = evaluation_name
 
-    def configure_test_sharingAndModifySharing():
-        (projectName, evaluationName) = ("Teamwork2", "Week 2")
-        (metagroupName, groupName) = ("b", "F")
-        (ratinglevel, checkbox1, checkbox2, checkbox3) = \
+        conf3 = ConfigureRating
+        conf3.metagroup_name = metagroup_name
+        conf3.group_name = group_name
+        conf3.level = level
+        conf3.checkbox1 = checkbox1
+        conf3.checkbox2 = checkbox2
+        conf3.checkbox3 = checkbox3
+
+        return (conf1, conf2, conf3)
+
+    def configure_test_sharing_and_delete():
+        (username, password, share_to_user) = (
+            "instructor1@example.com",
+            "abcdefgh", "ta@example.com")
+        conf = ConfigureUsernamePassword()
+        conf.username = username
+        conf.password = password
+        return (conf, share_to_user)
+
+    def configure_test_sharing_and_modify_sharing():
+        (username, password, share_to_user, shared_user_pw) =\
+            ("instructor1@example.com", "abcdefgh",
+             "ta@example.com", "abcdefgh")
+        (project_name, evaluation_name) = ("Teamwork2", "Week 2")
+        (metagroup_name, group_name) = ("b", "F")
+        (level, checkbox1, checkbox2, checkbox3) = \
             ("Rarely", False, True, True)
-        return (projectName, evaluationName, metagroupName,
-                groupName, ratinglevel, checkbox1, checkbox2, checkbox3)
+        conf1 = ConfigureUsernamePassword()
+        conf1.username = username
+        conf1.password = password
+
+        conf2 = ConfigureUsernamePassword()
+        conf2.username = share_to_user
+        conf2.password = shared_user_pw
+
+        conf3 = ConfigureEvaluation
+        conf3.project_name = project_name
+        conf3.evaluation_name = evaluation_name
+
+        conf4 = ConfigureRating
+        conf4.metagroup_name = metagroup_name
+        conf4.group_name = group_name
+        conf4.level = level
+        conf4.checkbox1 = checkbox1
+        conf4.checkbox2 = checkbox2
+        conf4.checkbox3 = checkbox3
+
+        return (conf1, conf2, conf3, conf4)
 
 
 class TestSharing(unittest.TestCase):
@@ -71,15 +147,20 @@ class TestSharing(unittest.TestCase):
     def test_1_sign_up_existed(self):
         # sign up
         test_sign_up = SignUp()
-        (username, password) = Configure.configure_test_1_successOrExisted()
+
+        conf = Configure.configure_test_1_success_or_existed()
+        (username, password) = (conf.username, conf.password)
         (url_current, alert_info) = test_sign_up.sign_up(username, password)
 
     def test_2_create_project_success(self):
         # create project
 
-        (username, password, project_name,
-         project_description, student_file, json_file) =\
-            Configure.configure_test_3_CreateProject_Success()
+        (conf1, conf2) = \
+            Configure.configure_test_3_create_project_success()
+        (username, password) = (conf1.username, conf1.password)
+        (project_name, project_description, student_file, json_file) = \
+            (conf2.project_name, conf2.project_description,
+             conf2.student_file, conf2.json_file)
         create_p = CreateProject()
 
         (url_current, alert_info) = \
@@ -89,22 +170,38 @@ class TestSharing(unittest.TestCase):
 
     def test_3_evaluations(self):
         # create evaluation
-        (username, password, projectName, evaluationName) = \
-            Configure.configure_test_Evaluations()
+
+        (conf1, conf2) = \
+            Configure.configure_test_evaluations()
+        (username, password) = \
+            (conf1.username, conf1.password)
+        (project_name, evaluation_name) = \
+            (conf2.project_name, conf2.evaluation_name)
         create_e = Evaluation()
         (project_url, alert_info) =\
             create_e.create_evaluation_attempt(
-                username, password, projectName, evaluationName)
+                username, password, project_name, evaluation_name)
 
     def test_4_rating_two_groups(self):
 
         # Select one group to rate
         # then select the 2nd group to rate
 
-        (username, password, project_name, evaluation_name,
-         metagroup_name, group_name, level,
-         checkbox1, checkbox2, checkbox3) = \
-            Configure.configure_test_Rating()
+        (conf1, conf2, conf3) = \
+            Configure.configure_test_rating()
+        (username, password) = \
+            (conf1.username, conf1.password)
+        (project_name, evaluation_name) = \
+            (conf2.project_name, conf2.evaluation_name)
+        (metagroup_name, group_name,
+         level, checkbox1, checkbox2, checkbox3) = (
+            conf3.metagroup_name,
+            conf3.group_name,
+            conf3.level,
+            conf3.checkbox1,
+            conf3.checkbox2,
+            conf3.checkbox3
+        )
 
         create_r = Rating()
         (statusA, statusB, statusC) =\
@@ -121,10 +218,23 @@ class TestSharing(unittest.TestCase):
 
         # rate another group
         create_r = Rating()
-        (username, password, project_name,
-         evaluation_name, metagroup_name, group_name,
-         level, checkbox1, checkbox2, checkbox3) = \
-            Configure.configure_test_Rating_Another_Group()
+
+        (conf1, conf2, conf3) = \
+            Configure.configure_test_rating_another_group()
+        (username, password) = \
+            (conf1.username, conf1.password)
+        (project_name, evaluation_name) = \
+            (conf2.project_name, conf2.evaluation_name)
+        (metagroup_name, group_name,
+         level, checkbox1, checkbox2, checkbox3) = (
+            conf3.metagroup_name,
+            conf3.group_name,
+            conf3.level,
+            conf3.checkbox1,
+            conf3.checkbox2,
+            conf3.checkbox3
+        )
+
         (statusA, statusB, statusC) = \
             create_r.rating_one_group(username, password, project_name,
                                       evaluation_name, metagroup_name,
@@ -140,13 +250,17 @@ class TestSharing(unittest.TestCase):
     def test_5_sharing_and_delete(self):
         # share the project and then delete the sharing
 
-        (username, password, shareToUser) = \
-            Configure.configure_test_sharingAndDelete()
+        (conf, share_to_user) =  \
+            Configure.configure_test_sharing_and_delete()
+        (username, password) = (
+            conf.username,
+            conf.password
+        )
 
         create_s = Sharing()
 
         (success_text, delete_text) = create_s.\
-            sharing_project_and_delete(username, password, shareToUser)
+            sharing_project_and_delete(username, password, share_to_user)
         is_success_text = success_text == "Permission successfully created"
         is_delete_text = delete_text == "successfully delete permission"
 
@@ -155,23 +269,33 @@ class TestSharing(unittest.TestCase):
     def test_6_sharing_and_modify_sharing(self):
         # share the project and modify the rating from the sharedUser
 
-        (username, password, shareToUser, sharedUserPw) =\
-            ("instructor1@example.com", "abcdefgh",
-             "ta@example.com", "abcdefgh")
-
-        (project_name, evaluation_name,
-         metagroup_name, group_name, rating_level,
-         checkbox1, checkbox2, checkbox3) = \
-            Configure.configure_test_sharingAndModifySharing()
+        (conf1, conf2, conf3, conf4) = \
+            Configure.configure_test_sharing_and_modify_sharing()
+        (username, password) = (conf1.username, conf1.password)
+        (share_to_user, shared_user_pw) = (
+            conf2.username,
+            conf2.password
+        )
+        (project_name, evaluation_name) = \
+            (conf3.project_name, conf3.evaluation_name)
+        (metagroup_name, group_name,
+         level, checkbox1, checkbox2, checkbox3) = (
+            conf4.metagroup_name,
+            conf4.group_name,
+            conf4.level,
+            conf4.checkbox1,
+            conf4.checkbox2,
+            conf4.checkbox3
+        )
 
         create_s = Sharing()
 
         (statusA, statusB, statusC) =\
             create_s.sharing_project_and_check(username, password,
-                                               shareToUser, sharedUserPw,
+                                               share_to_user, shared_user_pw,
                                                project_name,
                                                evaluation_name, metagroup_name,
-                                               group_name, rating_level,
+                                               group_name, level,
                                                checkbox1, checkbox2, checkbox3)
 
         if checkbox1:
