@@ -67,7 +67,7 @@ class TestSharing(unittest.TestCase):
         (username, password, projectname, projectdescription, studentFile, jsonFile) = Configure.configure_test_3_CreateProject_Success()
         createP = CreateProject()
         
-        (urlCurrent, alertInfo)= createP.createProject_attempt(username, password, projectname, projectdescription, studentFile, jsonFile)
+        (urlCurrent, alertInfo)= createP.create_project_attempt(username, password, projectname, projectdescription, studentFile, jsonFile)
 
         
     
