@@ -32,7 +32,7 @@ class TestLogin(unittest.TestCase):
         #sign up        
         testSignUp = SignUp()
         (username, password) = Configure.configure_test_2_0_successOrExisted()
-        (urlCurrent, alertInfo) = testSignUp.SignUp(username, password)
+        (urlCurrent, alertInfo) = testSignUp.sign_up(username, password)
     
     def test_signUpLink(self):
         #test the signUp link on login page

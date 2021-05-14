@@ -23,23 +23,24 @@ class TestSignUp(unittest.TestCase):
         (username, password) = Configure.configure_test_1_successOrExisted()
 
         # test signUp
-        testSignUp = SignUp()
-        (urlCurrent, alertInfo) = testSignUp.SignUp(username, password)
+        test_sign_up = SignUp()
+        (url_current, alert_info) = test_sign_up.sign_up(username, password)
 
-        IsSignUpSuccess = urlCurrent == "http://localhost:5000/login"
-        IsSignUpFailed = urlCurrent == "http://localhost:5000/signup"
-        IsAlertInfo = alertInfo \
+        is_sign_up_success = url_current == "http://localhost:5000/login"
+        is_sign_up_failed = url_current == "http://localhost:5000/signup"
+        is_alert_info = alert_info \
             == "That email address is already associated with an account"
 
-        self.assertTrue(IsSignUpSuccess or (IsSignUpFailed and IsAlertInfo))
+        self.assertTrue(is_sign_up_success
+                        or (is_sign_up_failed and is_alert_info))
 
     def test_signUp_loginLink(self):
-        testSignUp = SignUp()
-        loginUrl = testSignUp.SignUp_loginLink()
+        test_sign_up = SignUp()
+        login_url = test_sign_up.sign_up_login_link()
 
-        isLoginUrl = loginUrl == "http://localhost:5000/login"
+        is_login_url = login_url == "http://localhost:5000/login"
 
-        self.assertTrue(isLoginUrl)
+        self.assertTrue(is_login_url)
 
     def test_signUp_checkPassword(self):
         # 1st: error message will be shown due to unmatching password
@@ -48,14 +49,14 @@ class TestSignUp(unittest.TestCase):
         (username, password, checkPassword) \
             = Configure.configure_test_2_checkPassword()
 
-        testSignUp = SignUp()
-        (alert1, alert2) = \
-            testSignUp.SignUp_InvalidCheckPassword(username, password, checkPassword)
+        test_sign_up = SignUp()
+        (alert1, alert2) = test_sign_up.\
+            invalid_check_password(username, password, checkPassword)
 
-        IsAlert1 = alert1 == "Passwords must match"
-        IsAlert2 = alert2 == "Field must be between 8 and 80 characters long."
+        is_alert1 = alert1 == "Passwords must match"
+        is_alert2 = alert2 == "Field must be between 8 and 80 characters long."
 
-        self.assertTrue(IsAlert1 and IsAlert2, alert1)
+        self.assertTrue(is_alert1 and is_alert2, alert1)
 
 
 if __name__ == '__main__':

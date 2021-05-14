@@ -39,7 +39,7 @@ class TestCreateProject(unittest.TestCase):
         
         testSignUp = SignUp()
         (username, password) = Configure.configure_test_1_successOrExisted()
-        (urlCurrent, alertInfo) = testSignUp.SignUp(username, password)
+        (urlCurrent, alertInfo) = testSignUp.sign_up(username, password)
 
     def test_3_CreateProject_Success(self):        
         #success or duplicate project name error

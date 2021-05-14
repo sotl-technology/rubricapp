@@ -59,7 +59,7 @@ class TestSharing(unittest.TestCase):
         #sign up
         testSignUp = SignUp()
         (username, password) = Configure.configure_test_1_successOrExisted()
-        (urlCurrent, alertInfo) = testSignUp.SignUp(username, password)
+        (urlCurrent, alertInfo) = testSignUp.sign_up(username, password)
       
     def test_2_CreateProject_Success(self):
         #create project        
