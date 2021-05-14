@@ -77,7 +77,7 @@ class TestSharing(unittest.TestCase):
         (username, password, projectName, evaluationName) = Configure.configure_test_Evaluations()
         createE = Evaluation()
         
-        (projectURL, alertInfo) = createE.CreateEvaluation_attempt(username, password, projectName, evaluationName)
+        (projectURL, alertInfo) = createE.create_evaluation_attempt(username, password, projectName, evaluationName)
    
     
     def test_4_RatingTwoGroups(self):
