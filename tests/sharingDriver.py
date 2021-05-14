@@ -41,7 +41,7 @@ class Sharing:
         #one user shares the project to another user
         
         #login
-        LogIn.Login(self, username, password)
+        LogIn.login(self, username, password)
         self.driver.implicitly_wait(5)
         
         #Manage Projects
@@ -69,7 +69,7 @@ class Sharing:
         
         #Firstly share the project from one user -- (username, password) to (sharedUser, sharedUserPw)
         #login
-        LogIn.Login(self, username, password)
+        LogIn.login(self, username, password)
         self.driver.implicitly_wait(5)
         
         #Manage Projects
@@ -86,7 +86,7 @@ class Sharing:
         Sharing.logout(self)
         
         #login as the user who receives the shared project - (sharedUser, sharedUserPw)
-        LogIn.Login(self, sharedUser, sharedUserPw)
+        LogIn.login(self, sharedUser, sharedUserPw)
         
         # self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_css_selector("body > div.middle > div > div > div.w3-bar > h1:nth-child(2) > button"))
         self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_xpath("//*[text()='Shared project']"))
@@ -99,7 +99,7 @@ class Sharing:
         #delete the sharing:
         
         #login as the (username, password) again to delete the sharing - ensure to run for another time won't fail
-        LogIn.Login(self, username, password)
+        LogIn.login(self, username, password)
         self.driver.implicitly_wait(5)        
         #Manage Projects
         Sharing.manageProject(self)

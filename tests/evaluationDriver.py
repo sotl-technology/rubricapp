@@ -14,7 +14,7 @@ class Evaluation:
         
     def CreateEvaluation_attempt(self, username, password, projectName, evaluationName):
         
-        LogIn.Login(self, username, password)
+        LogIn.login(self, username, password)
         self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_link_text(projectName))
         self.driver.implicitly_wait(5)        
         projectURL = self.driver.current_url

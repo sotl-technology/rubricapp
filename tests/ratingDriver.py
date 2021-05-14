@@ -124,7 +124,7 @@ class Rating:
     def Rating_One_Group(self, username, password, projectName, evaluationName, metagroupName, groupName, ratinglevel, checkbox1=False, checkbox2=False, checkbox3=False):
         
         #login
-        LogIn.Login(self, username, password)
+        LogIn.login(self, username, password)
 
         # Select project
         Rating.selectProject(self, projectName)
@@ -138,7 +138,7 @@ class Rating:
         
     def test_attendance(self, username, password, projectName, evaluationName, metagroupName, groupName, studentNameToCheck):
         #login
-        LogIn.Login(self, username, password)
+        LogIn.login(self, username, password)
         
         # Select project
         Rating.selectProject(self, projectName)

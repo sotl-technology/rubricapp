@@ -32,7 +32,7 @@ class CreateProject:
     def CreateProject(self, username, password, projectDescription, projectpassword,
                       studentFile, jsonFile):
         
-        LogIn.Login(self, username, password) #login first
+        LogIn.login(self, username, password) #login first
         self.driver.implicitly_wait(5)
         self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_link_text("Create New Project"))        
         self.driver.implicitly_wait(5)
@@ -93,7 +93,7 @@ class CreateProject:
     
     def testRubricFileDriver(self, username, password):
     
-        LogIn.Login(self, username, password) #login first
+        LogIn.login(self, username, password) #login first
         self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_link_text("Create New Project"))
         self.driver.implicitly_wait(5)
         
