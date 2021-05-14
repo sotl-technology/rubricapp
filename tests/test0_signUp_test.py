@@ -1,17 +1,25 @@
 import unittest
+from configure import ConfigureUsernamePassword
 from signUpDriver import SignUp
 
 
 class Configure:
-    def configure_test_1_successOrExisted():
+    def _test1_success_or_existed():
+
         (username, password) = \
             ("sampleuser_SignUp@mail.com", "abcdefgh")
-        return (username, password)
+        conf = ConfigureUsernamePassword()
+        conf.username = username
+        conf.password = password
+        return conf
 
-    def configure_test_2_checkPassword():
+    def _test_2_checkPassword():
         (username, password, checkPassword) = \
             ("sampleuser_SignUp@mail.com", "abcdefgh", "abc")
-        return (username, password, checkPassword)
+        conf = ConfigureUsernamePassword()
+        conf.username = username
+        conf.password = password
+        return (conf, checkPassword)
 
 
 class TestSignUp(unittest.TestCase):
@@ -20,7 +28,8 @@ class TestSignUp(unittest.TestCase):
         # Sign up - either success or duplicate user error message
 
         # data input
-        (username, password) = Configure.configure_test_1_successOrExisted()
+        conf = Configure._test1_success_or_existed()
+        (username, password) = (conf.username, conf.password)
 
         # test signUp
         test_sign_up = SignUp()
@@ -46,8 +55,9 @@ class TestSignUp(unittest.TestCase):
         # 1st: error message will be shown due to unmatching password
         # 2nd: error also with checking password too short
 
+        (conf, checkPassword) = Configure._test_2_checkPassword()
         (username, password, checkPassword) \
-            = Configure.configure_test_2_checkPassword()
+            = (conf.username, conf.password, checkPassword)
 
         test_sign_up = SignUp()
         (alert1, alert2) = test_sign_up.\
