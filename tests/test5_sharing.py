@@ -86,7 +86,7 @@ class TestSharing(unittest.TestCase):
         (username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3) = Configure.configure_test_Rating()
         
         createR = Rating()
-        (statusA, statusB, statusC) = createR.Rating_One_Group(username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3)
+        (statusA, statusB, statusC) = createR.rating_one_group(username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3)
         if checkbox1: self.assertTrue(statusA)
         if checkbox2: self.assertTrue(statusB)
         if checkbox3: self.assertTrue(statusC)
@@ -94,7 +94,7 @@ class TestSharing(unittest.TestCase):
         #rate another group
         createR = Rating()
         (username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3) = Configure.configure_test_Rating_Another_Group()
-        (statusA, statusB, statusC) = createR.Rating_One_Group(username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3)
+        (statusA, statusB, statusC) = createR.rating_one_group(username, password, projectName, evaluationName, metagroupName, groupName, level, checkbox1, checkbox2, checkbox3)
         if checkbox1: self.assertTrue(statusA)
         if checkbox2: self.assertTrue(statusB)
         if checkbox3: self.assertTrue(statusC)

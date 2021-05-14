@@ -93,7 +93,7 @@ class Sharing:
         self.driver.execute_script("arguments[0].click()",self.driver.find_element_by_link_text("Teamwork2"))    
         
         #rate as a sharedUser
-        (statusA, statusB, statusC) = Rating.Rate_Group(self, username, password, projectName, evaluationName, metagroupName, groupName, ratinglevel, checkbox1, checkbox2, checkbox3)
+        (statusA, statusB, statusC) = Rating.rate_group(self, username, password, projectName, evaluationName, metagroupName, groupName, ratinglevel, checkbox1, checkbox2, checkbox3)
 
         
         #delete the sharing:
@@ -110,14 +110,3 @@ class Sharing:
         Sharing.Close(self)
         
         return (statusA, statusB, statusC)
-    
-    
-    
-    
-    
-    
-    
-    
-        
-        
-        
