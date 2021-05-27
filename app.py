@@ -32,6 +32,11 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import zipfile
 from os.path import basename
 import glob
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from subprocess import Popen, PIPE
+from email import encoders
+from email.mime.base import MIMEBase
 
 
 
@@ -1639,6 +1644,15 @@ def sendEmail(project_id, evaluation_name, show_score):
 
     current_record.time_email_sent = current_time
 
+    #finds students emails and their corresponding rubric scores for their group. Then calls on the send_emails_to_students method to actually send the email.
+    for group in group_col:
+        students_email = select_students_by_group(group, group_worksheet)
+        file_name = "{}_{}_{}.html".format(project.project, evaluation_name, group)    
+        path_to_evalutaion_name = "{}/{}/{}/evaluation_feedback/{}".format(base_directory, project.owner, project.project,evaluation_name)    #make directory to place each evaluation under a file named after eva_name
+        path_to_html = "{}/{}".format(path_to_evalutaion_name, file_name)
+
+        send_emails_to_students(group, students_email, path_to_html, project, evaluation_name, from_email, file_name)
+
     db.session.commit()
     return redirect(url_for('project_profile', project_id=project_id, msg="success"))
 
@@ -1694,12 +1708,12 @@ def generate_HTML_files(project_id,evaluation_name,group_col,show_score):
                 os.mkdir(path_to_evalutaion_name)
             path_to_html = "{}/{}".format(path_to_evalutaion_name, file_name)
             if isSendEmail is True:
-                print("FALSE - coming_from_downloadFeedback")
                 current_record.num_of_finished_tasks += len(students_email)
             if os.path.exists(path_to_html):
                 os.remove(path_to_html)
             with open(path_to_html, 'w') as f:
                 f.write(download_page(project.project_id, evaluation_name, group, "normal", show_score))
+
     db.session.commit()
 
 
@@ -1707,53 +1721,58 @@ def generate_HTML_files(project_id,evaluation_name,group_col,show_score):
 
 
 
-def send_emails_to_students(group, project, evaluation_name, from_email, path_to_html, students_email, current_record):
+def send_emails_to_students(group, students_email, path_to_html, project, evaluation_name, from_email, file_name):
     """
     It was extracted from "sendEmail" function so that threadpool can be easily applied, it interacts with the server
     and send out emails, and it prints debugging messages at last
     :param group: current group name
     :param project: current project name
     :param evaluation_name: current evaluation name
-    :param from_email: defined in sendEmail function
+    :param from_email: represents the instructor's email. It's set in the sendEmail method above
     :param path_to_html: it points to the grade report html file of the current group, all group memebers share the same
     html grade report
     :param students_email: a list of emails of students in current group
-    :param current_record: sending record (row) in the EmailSendingRecord database, contains three parameters
+    :param evaluation_name: name of evaluation
     :return: X
     """
-    subject = "grade: {}, {}, {}".format(project.project, evaluation_name, group)
-    print('\n\n' + str(subject))
-    try:
-        index = 0;
-        for email in students_email:
-            # create an instance of message
-            if email is not None:
-                subject += str(index)
-                index += 1
-                myLock = FileLock(path_to_html+'.lock')
-                with open(path_to_html, "r") as file_to_html:
-                    #subprocess.call(["mail", "-s", subject, "-r", from_email, "-a", path_to_html, email])
-                    subprocess.call(["mailx", "-s", "\"TestingGG\"", "elhadie540@hotmail.com"])
-                    dateTimeObj = datetime.now()
-                    timestampStr = dateTimeObj.strftime("%d-%b-%Y (%H:%M:%S.%f)")
-                    current_record.num_of_finished_tasks += 1
-                    print("Sent the email to " + email + " at " + timestampStr)
-    except Exception as e:
-        print('Something went wrong' + str(e))
-        msg = ""
-        msg += str(e)
-        msg += "\n"
-        # remove the html file after sending email
-        # in case of duplicated file existence
-    print("Number of finished tasks is: " + str(current_record.num_of_finished_tasks))
-    print("sent to email: " + current_record.last_email)
-    if os.path.exists(path_to_html):
-        os.remove(path_to_html)
-        # if os.path.exists(path_to_pdf):
-        #    os.remove(path_to_pdf)
-    # return redirect(url_for('project_profile', project_id=project_id, msg="success"))
-    # db.session.commit()
 
+    
+    subject = "grade: {}, {}, {}".format(project.project, evaluation_name, group)
+
+    path_to_evaluation_name = "{}/{}/{}/evaluation_feedback/{}".format(base_directory, project.owner, project.project,evaluation_name)    #make directory to place each evaluation under a file named after eva_name
+
+    msg = MIMEMultipart("alternative")
+    msg["From"] = from_email
+    msg["Subject"] = subject
+
+    readEvaluation = open(path_to_html,"r")
+    html = MIMEText(readEvaluation.read(), 'html', 'utf-8')
+    msg.attach(html)
+
+    
+    part = MIMEBase("application", "octet-stream")
+    part.set_payload(readEvaluation.read())
+    encoders.encode_base64(part)
+    part.add_header(
+    "Content-Disposition",
+    f"attachment; filename= {file_name}",
+)
+    
+    try:
+        for email in students_email:
+            msg["To"] = email
+            msg.attach(part)
+            p = Popen(["/usr/sbin/sendmail", "-t"], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            p.communicate(msg.as_string().encode())
+            
+
+    except Exception as e:
+        print(e)
+    
+
+    readEvaluation.close()
+    print("Email successfully sent to group {}!".format(group))
+    
 
 @app.route('/account/<string:msg>', methods=['GET', 'POST'])
 @login_required
